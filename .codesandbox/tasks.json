@@ -8,5 +8,14 @@
   ],
 
   // These tasks can be run from CodeSandbox. Running one will open a log in the app.
-  "tasks": {}
+  "tasks": [
+    {
+      "name": "Start the server",
+      "command": "pnpm start",
+      "runAtStart": true,
+      "preview": {
+        "port": 4200
+      }
+    }
+  ]
 }
