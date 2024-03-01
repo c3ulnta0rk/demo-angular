@@ -1,0 +1,5 @@
+<button class="prev" (click)="scrollItems(-1)"><</button>
+<div #scroller class="scroller" c3AttachScroll>
+  <ng-content></ng-content>
+</div>
+<button class="next" (click)="scrollItems(1)">></button>
