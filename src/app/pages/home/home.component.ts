@@ -11,6 +11,9 @@ import { CarouselItemDirective } from '../../components/carousel/carousel-item.d
 import { ScrollDispatcherService } from '../../modules/scrollDispatcher/scrollDispatcher.service';
 import { DropdownService } from '../../components/dropdown/dropdown.service';
 import { SampleComponent } from '../../components/sample/sample.component';
+import { AttachScrollDirective } from '../../modules/scrollDispatcher/attachScroll.directive';
+import { filter } from 'rxjs';
+import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
 
 @Component({
   selector: 'c3-home',
@@ -20,6 +23,8 @@ import { SampleComponent } from '../../components/sample/sample.component';
     CarouselComponent,
     CardComponent,
     CarouselItemDirective,
+    AttachScrollDirective,
+    C3OnScrollEndDirective
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -29,13 +34,25 @@ export class HomeComponent {
   #dropdownService = inject(DropdownService);
   public items = Array.from({ length: 20 }, (_, i) => i + 1);
 
-  openDropdown($event: MouseEvent): void {
+  openDropdown($event: MouseEvent, items: number): void {
     $event.stopImmediatePropagation();
     const element = $event.target as HTMLElement;
-    this.#dropdownService.toggleDropdown({
-      element,
-      component: SampleComponent,
-      position: 'below',
-    });
+    this.#dropdownService
+      .toggleDropdown<SampleComponent>({
+        element,
+        component: SampleComponent,
+        position: 'below',
+        closeOnOutsideClick: true,
+      })
+      .pipe(filter(Boolean))
+      .subscribe({
+        next: (mountedDropdown) => {
+          mountedDropdown.componentRef.instance.txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
+        },
+      });
+  }
+
+  load() {
+    console.log('load');
   }
 }

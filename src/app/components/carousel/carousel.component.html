@@ -1,5 +1,15 @@
-<button class="prev" (click)="scrollItems(-1)"><</button>
+<button
+  class="rounded-full absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 shadow-gray-700"
+  (click)="scrollItems(-1)"
+>
+  <
+</button>
 <div #scroller class="scroller" c3AttachScroll>
   <ng-content></ng-content>
 </div>
-<button class="next" (click)="scrollItems(1)">></button>
+<button
+  class="rounded-full absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 shadow-gray-700"
+  (click)="scrollItems(1)"
+>
+  >
+</button>

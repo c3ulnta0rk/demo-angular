@@ -3,14 +3,28 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ComponentRef,
+  DestroyRef,
   OnInit,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
   inject,
 } from '@angular/core';
-import { DropdownConfig, DropdownService } from './dropdown.service';
-import { filter, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  DropdownConfig,
+  DropdownService,
+  MountedDropdown,
+} from './dropdown.service';
+import {
+  Subscription,
+  filter,
+  BehaviorSubject,
+  merge,
+  fromEvent,
+  map,
+} from 'rxjs';
 import { ScrollDispatcherService } from '../../modules/scrollDispatcher/scrollDispatcher.service';
 
 @Component({
@@ -23,78 +37,258 @@ import { ScrollDispatcherService } from '../../modules/scrollDispatcher/scrollDi
   encapsulation: ViewEncapsulation.None,
 })
 export class DropdownComponent implements OnInit {
-  #dropdownService = inject(DropdownService);
+  public dropdownService = inject(DropdownService);
   #cdr = inject(ChangeDetectorRef);
   #scrollDispatcherService = inject(ScrollDispatcherService);
+  #destroyRef = inject(DestroyRef);
+  #scrollSubscriptions = new Map<DropdownConfig['element'], Subscription>();
+  #styleSubscriptions = new Map<DropdownConfig['element'], Subscription>();
+  #clickOutsideSubscriptions = new Map<
+    DropdownConfig['element'],
+    Subscription
+  >();
+
   @ViewChild('dropdown', { read: ViewContainerRef })
   viewContainerRef: ViewContainerRef;
 
-  public top = 0;
-  public left = 0;
-
-  ngOnInit(): void {
-    this.#dropdownService
-      .getDropdownEmitter()
-      .pipe(filter((config) => !!config))
+  ngOnInit() {
+    // Subscribes to new dropdown observable and opens the dropdown
+    this.dropdownService
+      .getNewDropdownObservable()
+      .pipe(filter(Boolean), takeUntilDestroyed(this.#destroyRef))
       .subscribe((config) => this.#openDropdown(config));
+
+    // Subscribes to removed dropdown observable and cleans up subscriptions
+    this.dropdownService
+      .getRemovedDropdownObservable()
+      .pipe(takeUntilDestroyed(this.#destroyRef), filter(Boolean))
+      .subscribe(([element, mountedElement]) => {
+        this.#scrollSubscriptions.get(element)?.unsubscribe();
+        this.#scrollSubscriptions.delete(element);
+
+        this.#styleSubscriptions.get(element)?.unsubscribe();
+        this.#styleSubscriptions.delete(element);
+
+        this.#clickOutsideSubscriptions.get(mountedElement)?.unsubscribe();
+        this.#clickOutsideSubscriptions.delete(mountedElement);
+        this.#cdr.detectChanges();
+      });
   }
 
-  #openDropdown(config: DropdownConfig): void {
-    if (config.component) {
-      const componentRef = this.viewContainerRef.createComponent(
-        config.component,
+  // Opens a new dropdown based on the provided config
+  #openDropdown<Type>(config: DropdownConfig): void {
+    if (!config.component) return;
+    const componentRef = this.viewContainerRef.createComponent<Type>(
+      config.component
+    );
+
+    const newMountedDropdown = this.#createMountedDropdown(
+      config,
+      componentRef
+    );
+
+    const dropdownElement = componentRef.location.nativeElement;
+    dropdownElement.classList.add('c3-dropdown');
+
+    this.#subscribeToStyles(config.element, newMountedDropdown);
+
+    this.#subscribeToScroll(config);
+
+    if (config.closeOnOutsideClick)
+      this.#clickOutsideSubscription(
+        newMountedDropdown.componentRef.location.nativeElement
+      );
+  }
+
+  #createMountedDropdown<Type>(
+    config: DropdownConfig,
+    componentRef: ComponentRef<Type>
+  ) {
+    const newMountedDropdown = {
+      componentRef,
+      top: new BehaviorSubject(0),
+      left: new BehaviorSubject(0),
+      visible: new BehaviorSubject(true),
+    };
+
+    this.dropdownService.addMountedDropdown(config.element, newMountedDropdown);
+
+    return newMountedDropdown;
+  }
+
+  #applyStyles<ComponentType>(
+    componentRef: ComponentRef<ComponentType>,
+    mountedDropdown: MountedDropdown<ComponentType>
+  ): void {
+    const dropdownElement = componentRef.location.nativeElement;
+    dropdownElement.style.display = mountedDropdown.visible.value
+      ? 'block'
+      : 'none';
+    dropdownElement.style.top = `${mountedDropdown.top.value}px`;
+    dropdownElement.style.left = `${mountedDropdown.left.value}px`;
+  }
+
+  #subscribeToStyles<ComponentType>(
+    element: HTMLElement,
+    mountedDropdown: MountedDropdown<ComponentType>
+  ): void {
+    const styleSubscription = merge(
+      mountedDropdown.top,
+      mountedDropdown.left,
+      mountedDropdown.visible
+    )
+      .subscribe(() => {
+        this.#applyStyles(mountedDropdown.componentRef, mountedDropdown);
+      });
+
+    this.#styleSubscriptions.set(element, styleSubscription);
+  }
+
+  #subscribeToScroll(config: DropdownConfig): void {
+    const [, parentScrollObservable] =
+      this.#scrollDispatcherService.getScrollContainerObservableForElement(
+        config.element
       );
 
-      this.#dropdownService.addMountedDropdown(config.element, componentRef);
+    if (parentScrollObservable) {
+      const scrollSubscription = parentScrollObservable.subscribe(() =>
+        this.#calculatePosition(config.element, config.position)
+      );
+      this.#calculatePosition(config.element, config.position);
 
-      this.#scrollDispatcherService.scrollObservable
-        .pipe(startWith(null))
-        .subscribe(() => {
-          this.#calculatePosition(config.element, config.position);
-        });
+      this.#scrollSubscriptions.set(config.element, scrollSubscription);
     }
   }
 
+  #clickOutsideSubscription(element: HTMLElement): void {
+    const clickOutsideSubscription = this.#getClickOutsideObservable(element)
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        filter(Boolean),
+        filter((target) => element.isEqualNode(target))
+      )
+      .subscribe(() => {
+        const mountedDropdown =
+          this.dropdownService.getMountedDropdownByComponentRefElement(element);
+
+        if (!mountedDropdown) return;
+
+        const [elementKey] = mountedDropdown;
+        this.dropdownService.removeMountedDropdown(elementKey);
+        this.#clickOutsideSubscriptions.get(elementKey)?.unsubscribe();
+        this.#clickOutsideSubscriptions.delete(elementKey);
+      });
+
+    this.#clickOutsideSubscriptions.set(element, clickOutsideSubscription);
+  }
+
+  // Returns an observable for clicking outside the dropdown element
+  #getClickOutsideObservable(element: HTMLElement) {
+    return fromEvent(document, 'click').pipe(
+      filter((event) => !element.contains(event.target as Node)),
+      map(() => element)
+    );
+  }
+
+  // Calculates the position of the dropdown element based on the viewport and scroll container
   #calculatePosition(element: HTMLElement, position: string): void {
     const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
+    const componentRef = this.dropdownService.getMountedDropdown(element);
+
+    if (!componentRef) return;
 
     const rect = element.getBoundingClientRect();
-    this.top = rect.top;
-    this.left = rect.left;
+    componentRef.top.next(rect.top);
+    componentRef.left.next(rect.left);
 
-    // Ajustement en fonction de la hauteur de la vue
-    if (rect.bottom + 100 > viewportHeight && position === 'below') {
-      this.top -= rect.bottom + 100 - viewportHeight + 20; // Ajoute un peu d'espace
-    } else if (rect.top - 100 < 0 && position === 'above') {
-      this.top += 100 - rect.top + 20; // Ajoute un peu d'espace
+    const [scrollContainerElement] =
+      this.#scrollDispatcherService.getScrollContainerObservableForElement(
+        element
+      );
+    const scrollContainerRect = scrollContainerElement?.getBoundingClientRect();
+
+    // Check if the element is out of the scroll container
+    const isOutOfScroller = this.#isOutOfScroller(rect, scrollContainerRect);
+
+    if (isOutOfScroller) {
+      componentRef.visible.next(false);
+    } else {
+      componentRef.visible.next(true);
+      this.#adjustPosition(rect, position, componentRef, viewportHeight);
     }
 
-    // Ajustement en fonction de la largeur de la vue
-    if (rect.right + 100 > viewportWidth && position === 'beside') {
-      this.left -= rect.right + 100 - viewportWidth + 20; // Ajoute un peu d'espace
-    } else if (rect.left - 100 < 0 && position === 'left') {
-      this.left += 100 - rect.left + 20; // Ajoute un peu d'espace
-    }
-    const elementHeight = element.offsetHeight;
+    this.#cdr.detectChanges();
+  }
+
+  #isOutOfScroller(
+    rect: DOMRect,
+    scrollContainerRect: DOMRect | undefined
+  ): boolean {
+    return (
+      scrollContainerRect &&
+      (rect.top < scrollContainerRect.top ||
+        rect.bottom > scrollContainerRect.bottom ||
+        rect.left < scrollContainerRect.left ||
+        rect.right > scrollContainerRect.right)
+    );
+  }
+
+  #adjustPosition<ComponentType>(
+    rect: DOMRect,
+    position: string,
+    componentRef: MountedDropdown<ComponentType>,
+    viewportHeight: number
+  ): void {
+    const elementHeight = rect.height;
 
     switch (position) {
       case 'above':
-        this.top -= 5;
+        this.#positionAbove(componentRef);
         break;
       case 'beside':
-        this.left += elementHeight;
+        this.#positionBeside(componentRef, elementHeight);
         break;
       case 'left':
-        this.left -= 5;
+        this.#positionLeft(componentRef);
         break;
       case 'auto':
       case 'below':
       default:
-        this.top += elementHeight;
+        this.#positionBelow(rect, componentRef, elementHeight, viewportHeight);
         break;
     }
+  }
 
-    this.#cdr.detectChanges();
+  #positionAbove<ComponentType>(
+    componentRef: MountedDropdown<ComponentType>
+  ): void {
+    componentRef.top.next(componentRef.top.value - 5);
+  }
+
+  #positionBeside<ComponentType>(
+    componentRef: MountedDropdown<ComponentType>,
+    elementHeight: number
+  ): void {
+    componentRef.left.next(componentRef.left.value + elementHeight);
+  }
+
+  #positionLeft<ComponentType>(
+    componentRef: MountedDropdown<ComponentType>
+  ): void {
+    componentRef.left.next(componentRef.left.value - 5);
+  }
+
+  #positionBelow<ComponentType>(
+    rect: DOMRect,
+    componentRef: MountedDropdown<ComponentType>,
+    elementHeight: number,
+    viewportHeight: number
+  ): void {
+    componentRef.top.next(componentRef.top.value + elementHeight);
+    if (rect.bottom + 100 > viewportHeight) {
+      componentRef.top.next(
+        componentRef.top.value - rect.bottom + 100 - viewportHeight + 20
+      );
+    }
   }
 }

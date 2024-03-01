@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ContentChildren,
@@ -9,7 +8,6 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { startWith } from 'rxjs';
 import { CarouselItemDirective } from './carousel-item.directive';
 import { AttachScrollDirective } from '../../modules/scrollDispatcher/attachScroll.directive';
 

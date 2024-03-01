@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind utilities;
+
+@mixin btn-base() {
+    button {
+      @apply bg-teal-800 text-white font-bold py-2 px-4 rounded shadow shadow-teal-700 text-[15px] active:scale-95;
+    }
+
+    .btn-icon {
+      @apply bg-teal-800 text-white font-bold py-2 px-4 rounded shadow shadow-teal-700 text-[15px] active:scale-95 text-center;
+    }
+}
+
+

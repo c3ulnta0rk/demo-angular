@@ -1,0 +1,7 @@
+@use "./btn" as *;
+@use "./scrollbar" as *;
+
+@mixin core() {
+  @include btn-base();
+  @include scrollbar();
+}

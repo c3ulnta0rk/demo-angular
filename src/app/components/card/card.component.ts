@@ -8,5 +8,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   templateUrl: './card.component.html',
   styleUrl: './card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'c3-card',
+  },
 })
 export class CardComponent {}
