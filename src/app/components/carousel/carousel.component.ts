@@ -4,6 +4,8 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  EventEmitter,
+  Output,
   QueryList,
   ViewChild,
   ViewEncapsulation,
@@ -30,6 +32,7 @@ import { C3OnDragDirective } from '../../directives/onDrag.directive';
   },
 })
 export class CarouselComponent {
+  @Output() c3OnScrollEnd = new EventEmitter<void>();
   @ContentChildren(CarouselItemDirective, { descendants: true })
   carouselItems: QueryList<CarouselItemDirective>;
 
@@ -43,7 +46,7 @@ export class CarouselComponent {
     // Prendre en compte le padding uniquement si le scroll est à 0
     if (currentScrollPosition === 0) {
       const scrollerStyle = window.getComputedStyle(
-        this.scroller.nativeElement
+        this.scroller.nativeElement,
       );
       padding = parseInt(scrollerStyle.paddingLeft, 10);
     }
@@ -53,33 +56,25 @@ export class CarouselComponent {
       left: newScrollPosition,
       behavior: 'smooth',
     });
+    this.onScroll();
   }
 
   onDrag(event: { deltaX: number; deltaY: number }): void {
-    // define scroll direction of carousel (x or y)
-    const scrollDirection = this.getScrollDirection();
-    // if scroll direction is x, scroll carousel
-    if (scrollDirection === 'x') {
-      const currentScrollPosition = this.scroller.nativeElement.scrollLeft;
-      const newScrollPosition = currentScrollPosition - event.deltaX;
-      console.log('newScrollPosition', event.deltaX);
-      this.scroller.nativeElement?.scrollTo({
-        left: newScrollPosition,
-      });
-    }
+    const currentScrollPosition = this.scroller.nativeElement.scrollLeft;
+    const newScrollPosition = currentScrollPosition - event.deltaX;
+    this.scroller.nativeElement.scrollTo({
+      left: newScrollPosition,
+      behavior: 'auto',
+    });
+    this.onScroll();
   }
 
-  getScrollDirection(): 'x' | 'y' {
+  onScroll(): void {
     const element = this.scroller.nativeElement;
-    const hasHorizontalScroll = element.scrollWidth > element.clientWidth;
-    const hasVerticalScroll = element.scrollHeight > element.clientHeigh;
-
-    if (hasHorizontalScroll && !hasVerticalScroll) {
-      return 'x';
-    } else if (!hasHorizontalScroll && hasVerticalScroll) {
-      return 'y';
-    } else {
-      return 'x';
+    const isScrollingEnd =
+      element.scrollLeft + element.clientWidth >= element.scrollWidth;
+    if (isScrollingEnd) {
+      this.c3OnScrollEnd.emit();
     }
   }
 }

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   inject,
@@ -24,7 +25,7 @@ import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
     CardComponent,
     CarouselItemDirective,
     AttachScrollDirective,
-    C3OnScrollEndDirective
+    C3OnScrollEndDirective,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -32,6 +33,7 @@ import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
 })
 export class HomeComponent {
   #dropdownService = inject(DropdownService);
+  #cdr = inject(ChangeDetectorRef);
   public items = Array.from({ length: 20 }, (_, i) => i + 1);
 
   openDropdown($event: MouseEvent, items: number): void {
@@ -52,7 +54,8 @@ export class HomeComponent {
       });
   }
 
-  load() {
-    console.log('load');
+  onScrollEnd() {
+    this.items.push(...Array.from({ length: 20 }, (_, i) => i + 1));
+    this.#cdr.markForCheck();
   }
 }
