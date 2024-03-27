@@ -1,9 +1,12 @@
+import { isPlatformServer } from '@angular/common';
 import {
   DestroyRef,
   Directive,
   ElementRef,
   EventEmitter,
+  Inject,
   Output,
+  PLATFORM_ID,
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,7 +26,12 @@ export class C3OnDragDirective {
   private lastY: number;
   private _destroyRef = inject(DestroyRef);
 
-  constructor(private elementRef: ElementRef) {
+  constructor(
+    private elementRef: ElementRef,
+    @Inject(PLATFORM_ID) private _platformId: Object,
+  ) {
+    if (isPlatformServer(this._platformId)) return;
+
     this.registerEvent('mousedown', this.onMouseDown.bind(this));
     this.registerEvent('touchstart', this.onTouchStart.bind(this));
     this.registerEvent('mouseup', this.onMouseUp.bind(this), window);
@@ -94,20 +102,17 @@ export class C3OnDragDirective {
   private drag(event: MouseEvent | TouchEvent): void {
     if (!this.isDragging) return;
 
-    let deltaX = 0;
-    let deltaY = 0;
+    const clientX =
+      event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
+    const clientY =
+      event instanceof MouseEvent ? event.clientY : event.touches[0].clientY;
 
-    if (event instanceof MouseEvent) {
-      deltaX = event.clientX - this.lastX;
-      deltaY = event.clientY - this.lastY;
-      this.lastX = event.clientX;
-      this.lastY = event.clientY;
-    } else if (event instanceof TouchEvent) {
-      deltaX = event.touches[0].clientX - this.lastX;
-      deltaY = event.touches[0].clientY - this.lastY;
-      this.lastX = event.touches[0].clientX;
-      this.lastY = event.touches[0].clientY;
-    }
+    if (this.lastX === clientX && this.lastY === clientY) return;
+
+    const deltaX = clientX - this.lastX;
+    const deltaY = clientY - this.lastY;
+    this.lastX = clientX;
+    this.lastY = clientY;
 
     this.c3OnDrag.emit({ deltaX, deltaY });
   }

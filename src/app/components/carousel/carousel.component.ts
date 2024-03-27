@@ -44,7 +44,7 @@ export class CarouselComponent {
       this.carouselItems.first._elementRef.nativeElement.offsetWidth;
     let padding = 0;
     // Prendre en compte le padding uniquement si le scroll est à 0
-    if (currentScrollPosition === 0) {
+    if (currentScrollPosition === 0 && window) {
       const scrollerStyle = window.getComputedStyle(
         this.scroller.nativeElement,
       );

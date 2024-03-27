@@ -55,7 +55,10 @@ export class HomeComponent {
   }
 
   onScrollEnd() {
-    this.items.push(...Array.from({ length: 20 }, (_, i) => i + 1));
+    const itemsLength = this.items.length;
+    this.items.push(
+      ...Array.from({ length: 20 }, (_, i) => itemsLength + i + 1),
+    );
     this.#cdr.markForCheck();
   }
 }
