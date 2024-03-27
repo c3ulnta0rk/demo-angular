@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent } from 'rxjs';
+import { Subscription, fromEvent, map } from 'rxjs';
 
 @Directive({
   selector: '[c3OnDrag]',
@@ -21,10 +21,11 @@ export class C3OnDragDirective {
   @Output() onDragStart = new EventEmitter<void>();
   @Output() onDragEnd = new EventEmitter<void>();
 
+  private _destroyRef = inject(DestroyRef);
   private isDragging = false;
   private lastX: number;
   private lastY: number;
-  private _destroyRef = inject(DestroyRef);
+  private preventClickSubscription: Subscription;
 
   constructor(
     private elementRef: ElementRef,
@@ -32,61 +33,44 @@ export class C3OnDragDirective {
   ) {
     if (isPlatformServer(this._platformId)) return;
 
-    this.registerEvent('mousedown', this.onMouseDown.bind(this));
-    this.registerEvent('touchstart', this.onTouchStart.bind(this));
-    this.registerEvent('mouseup', this.onMouseUp.bind(this), window);
-    this.registerEvent('touchend', this.onTouchEnd.bind(this));
-    this.registerEvent('mousemove', this.onMouseMove.bind(this));
-    this.registerEvent('touchmove', this.onTouchMove.bind(this));
+    this.registerEvent('mousedown', this.startDrag.bind(this));
+    this.registerEvent('touchstart', this.startDrag.bind(this));
+    this.registerEvent('mouseup', this.endDrag.bind(this), window);
+    this.registerEvent('touchend', this.endDrag.bind(this));
+    this.registerEvent('mousemove', this.drag.bind(this));
+    this.registerEvent('touchmove', this.drag.bind(this));
   }
 
   private registerEvent(
     eventName: string,
-    eventHandler: (event: Event) => void,
+    eventHandler: (event: MouseEvent | TouchEvent) => void = () => {},
     element: HTMLElement | Window = this.elementRef.nativeElement,
-  ): void {
-    fromEvent(element, eventName)
-      .pipe(takeUntilDestroyed(this._destroyRef))
+  ) {
+    return fromEvent<MouseEvent | TouchEvent>(element, eventName, {
+      capture: true,
+      passive: false,
+    })
+      .pipe(
+        takeUntilDestroyed(this._destroyRef),
+        map((event) => this.preventDefault(event)),
+      )
       .subscribe(eventHandler);
   }
 
-  private onMouseDown(event: MouseEvent): void {
+  private preventDefault(
+    event: MouseEvent | TouchEvent,
+  ): MouseEvent | TouchEvent {
     event.preventDefault();
     event.stopPropagation();
-    this.startDrag(event);
-  }
-
-  private onTouchStart(event: TouchEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.startDrag(event);
-  }
-
-  private onMouseUp(event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.endDrag(event);
-  }
-
-  private onTouchEnd(event: TouchEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.endDrag(event);
-  }
-
-  private onMouseMove(event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.drag(event);
-  }
-
-  private onTouchMove(event: TouchEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.drag(event);
+    return event;
   }
 
   private startDrag(event: MouseEvent | TouchEvent): void {
+    this.preventClickSubscription = this.registerEvent(
+      'click',
+      console.log,
+      window,
+    );
     this.isDragging = true;
     this.lastX =
       event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
@@ -96,6 +80,7 @@ export class C3OnDragDirective {
 
   private endDrag(event: MouseEvent | TouchEvent): void {
     this.isDragging = false;
+    this.preventClickSubscription?.unsubscribe();
     this.onDragEnd.emit();
   }
 

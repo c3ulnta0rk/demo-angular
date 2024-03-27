@@ -24,6 +24,10 @@ import {
   merge,
   fromEvent,
   map,
+  debounce,
+  debounceTime,
+  skipUntil,
+  interval,
 } from 'rxjs';
 import { ScrollDispatcherService } from '../../modules/scrollDispatcher/scrollDispatcher.service';
 
@@ -79,12 +83,12 @@ export class DropdownComponent implements OnInit {
   #openDropdown<Type>(config: DropdownConfig): void {
     if (!config.component) return;
     const componentRef = this.viewContainerRef.createComponent<Type>(
-      config.component
+      config.component,
     );
 
     const newMountedDropdown = this.#createMountedDropdown(
       config,
-      componentRef
+      componentRef,
     );
 
     const dropdownElement = componentRef.location.nativeElement;
@@ -96,13 +100,13 @@ export class DropdownComponent implements OnInit {
 
     if (config.closeOnOutsideClick)
       this.#clickOutsideSubscription(
-        newMountedDropdown.componentRef.location.nativeElement
+        newMountedDropdown.componentRef.location.nativeElement,
       );
   }
 
   #createMountedDropdown<Type>(
     config: DropdownConfig,
-    componentRef: ComponentRef<Type>
+    componentRef: ComponentRef<Type>,
   ) {
     const newMountedDropdown = {
       componentRef,
@@ -118,7 +122,7 @@ export class DropdownComponent implements OnInit {
 
   #applyStyles<ComponentType>(
     componentRef: ComponentRef<ComponentType>,
-    mountedDropdown: MountedDropdown<ComponentType>
+    mountedDropdown: MountedDropdown<ComponentType>,
   ): void {
     const dropdownElement = componentRef.location.nativeElement;
     dropdownElement.style.display = mountedDropdown.visible.value
@@ -130,16 +134,15 @@ export class DropdownComponent implements OnInit {
 
   #subscribeToStyles<ComponentType>(
     element: HTMLElement,
-    mountedDropdown: MountedDropdown<ComponentType>
+    mountedDropdown: MountedDropdown<ComponentType>,
   ): void {
     const styleSubscription = merge(
       mountedDropdown.top,
       mountedDropdown.left,
-      mountedDropdown.visible
-    )
-      .subscribe(() => {
-        this.#applyStyles(mountedDropdown.componentRef, mountedDropdown);
-      });
+      mountedDropdown.visible,
+    ).subscribe(() => {
+      this.#applyStyles(mountedDropdown.componentRef, mountedDropdown);
+    });
 
     this.#styleSubscriptions.set(element, styleSubscription);
   }
@@ -147,12 +150,12 @@ export class DropdownComponent implements OnInit {
   #subscribeToScroll(config: DropdownConfig): void {
     const [, parentScrollObservable] =
       this.#scrollDispatcherService.getScrollContainerObservableForElement(
-        config.element
+        config.element,
       );
 
     if (parentScrollObservable) {
       const scrollSubscription = parentScrollObservable.subscribe(() =>
-        this.#calculatePosition(config.element, config.position)
+        this.#calculatePosition(config.element, config.position),
       );
       this.#calculatePosition(config.element, config.position);
 
@@ -163,9 +166,10 @@ export class DropdownComponent implements OnInit {
   #clickOutsideSubscription(element: HTMLElement): void {
     const clickOutsideSubscription = this.#getClickOutsideObservable(element)
       .pipe(
+        skipUntil(interval(100)),
         takeUntilDestroyed(this.#destroyRef),
         filter(Boolean),
-        filter((target) => element.isEqualNode(target))
+        filter((target) => element.isEqualNode(target)),
       )
       .subscribe(() => {
         const mountedDropdown =
@@ -186,7 +190,7 @@ export class DropdownComponent implements OnInit {
   #getClickOutsideObservable(element: HTMLElement) {
     return fromEvent(document, 'click').pipe(
       filter((event) => !element.contains(event.target as Node)),
-      map(() => element)
+      map(() => element),
     );
   }
 
@@ -203,7 +207,7 @@ export class DropdownComponent implements OnInit {
 
     const [scrollContainerElement] =
       this.#scrollDispatcherService.getScrollContainerObservableForElement(
-        element
+        element,
       );
     const scrollContainerRect = scrollContainerElement?.getBoundingClientRect();
 
@@ -222,7 +226,7 @@ export class DropdownComponent implements OnInit {
 
   #isOutOfScroller(
     rect: DOMRect,
-    scrollContainerRect: DOMRect | undefined
+    scrollContainerRect: DOMRect | undefined,
   ): boolean {
     return (
       scrollContainerRect &&
@@ -237,7 +241,7 @@ export class DropdownComponent implements OnInit {
     rect: DOMRect,
     position: string,
     componentRef: MountedDropdown<ComponentType>,
-    viewportHeight: number
+    viewportHeight: number,
   ): void {
     const elementHeight = rect.height;
 
@@ -260,20 +264,20 @@ export class DropdownComponent implements OnInit {
   }
 
   #positionAbove<ComponentType>(
-    componentRef: MountedDropdown<ComponentType>
+    componentRef: MountedDropdown<ComponentType>,
   ): void {
     componentRef.top.next(componentRef.top.value - 5);
   }
 
   #positionBeside<ComponentType>(
     componentRef: MountedDropdown<ComponentType>,
-    elementHeight: number
+    elementHeight: number,
   ): void {
     componentRef.left.next(componentRef.left.value + elementHeight);
   }
 
   #positionLeft<ComponentType>(
-    componentRef: MountedDropdown<ComponentType>
+    componentRef: MountedDropdown<ComponentType>,
   ): void {
     componentRef.left.next(componentRef.left.value - 5);
   }
@@ -282,12 +286,12 @@ export class DropdownComponent implements OnInit {
     rect: DOMRect,
     componentRef: MountedDropdown<ComponentType>,
     elementHeight: number,
-    viewportHeight: number
+    viewportHeight: number,
   ): void {
     componentRef.top.next(componentRef.top.value + elementHeight);
     if (rect.bottom + 100 > viewportHeight) {
       componentRef.top.next(
-        componentRef.top.value - rect.bottom + 100 - viewportHeight + 20
+        componentRef.top.value - rect.bottom + 100 - viewportHeight + 20,
       );
     }
   }

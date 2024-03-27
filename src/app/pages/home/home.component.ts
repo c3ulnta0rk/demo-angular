@@ -37,7 +37,6 @@ export class HomeComponent {
   public items = Array.from({ length: 20 }, (_, i) => i + 1);
 
   openDropdown($event: MouseEvent, items: number): void {
-    $event.stopImmediatePropagation();
     const element = $event.target as HTMLElement;
     this.#dropdownService
       .toggleDropdown<SampleComponent>({

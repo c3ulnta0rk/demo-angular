@@ -32,7 +32,7 @@ export class DropdownService {
 
   addMountedDropdown(
     element: HTMLElement,
-    mountedDropdown: MountedDropdown<unknown>
+    mountedDropdown: MountedDropdown<unknown>,
   ): void {
     this.#mountedDropdownsMap.set(element, mountedDropdown);
     this.#mountedDropdownsMapSubject.next(this.#mountedDropdownsMap);
@@ -52,10 +52,10 @@ export class DropdownService {
   }
 
   getMountedDropdown<ComponentType>(
-    element: HTMLElement
+    element: HTMLElement,
   ): MountedDropdown<ComponentType> | undefined {
     return this.#mountedDropdownsMap.get(
-      element
+      element,
     ) as MountedDropdown<ComponentType>;
   }
 
@@ -65,7 +65,7 @@ export class DropdownService {
         const mountedElement = mountedDropdown.componentRef.location
           .nativeElement as HTMLElement;
         return mountedElement.isEqualNode(element);
-      }
+      },
     );
   }
 
@@ -84,7 +84,7 @@ export class DropdownService {
   }
 
   toggleDropdown<ComponentType>(
-    config: DropdownConfig
+    config: DropdownConfig,
   ): Observable<MountedDropdown<ComponentType> | undefined> {
     return new Observable<MountedDropdown<ComponentType>>((observer) => {
       const isDropdownMounted = this.#mountedDropdownsMap.has(config.element);
