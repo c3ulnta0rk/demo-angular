@@ -1,11 +1,22 @@
-<h1>Projet que  personne n'aime</h1>
-<p>P pas colorié</p>
-<c3-carousel (c3OnScrollEnd)="onScrollEnd()">
-  @for (item of items; track item) {
-  <c3-card c3CarouselItem>
-    <p>coucou {{ item }}</p>
+<div class="bg-slate-800 elevation px-2 py-4 flex gap-4">
+  <a routerLink="/home/dd-example" routerLinkActive="active"
+    >dropdown example</a
+  >
+  <a routerLink="/home/encapsulation-example" routerLinkActive="active"
+    >encapsulation-example example</a
+  >
+</div>
 
-    <button (click)="openDropdown($event, item)">Open dropdown</button>
-  </c3-card>
-  }
-</c3-carousel>
+<div class="p-4">
+  <h1>Projet que personne n'aime</h1>
+
+  <router-outlet></router-outlet>
+</div>
+
+<div class="p-4">
+  <input
+    type="text"
+    placeholder="Input dans le home component"
+    class="bg-white rounded p-2 w-full elevation"
+  />
+</div>
