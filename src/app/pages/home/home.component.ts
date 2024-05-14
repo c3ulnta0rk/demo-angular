@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit,
   inject,
 } from '@angular/core';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
