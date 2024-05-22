@@ -4,12 +4,12 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import { ComponentInputComponent } from '../../../../components/component-input/component-input.component';
+import { C3InputComponent } from '../../../../components/component-input/component-input.component';
 
 @Component({
   selector: 'c3-encapsulation-example',
   standalone: true,
-  imports: [CommonModule, ComponentInputComponent],
+  imports: [CommonModule, C3InputComponent],
   templateUrl: './encapsulation-example.component.html',
   styleUrl: './encapsulation-example.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
