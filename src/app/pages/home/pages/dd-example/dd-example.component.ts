@@ -13,6 +13,7 @@ import { AttachScrollDirective } from '../../../../modules/scrollDispatcher/atta
 import { filter } from 'rxjs';
 import { DropdownService } from '../../../../components/dropdown/dropdown.service';
 import { SampleComponent } from '../../../../components/sample/sample.component';
+import { C3OnClickOutsideDirective } from '../../../../directives/onClickOutside.directive';
 
 @Component({
   selector: 'c3-dd-example',
@@ -32,7 +33,7 @@ import { SampleComponent } from '../../../../components/sample/sample.component'
 export class DdExampleComponent {
   #dropdownService = inject(DropdownService);
   #cdr = inject(ChangeDetectorRef);
-  public items = Array.from({ length: 20 }, (_, i) => i + 1);
+  public items = Array.from({ length: 1 }, (_, i) => i + 1);
 
   openDropdown($event: MouseEvent, items: number): void {
     const element = $event.target as HTMLElement;
@@ -41,7 +42,7 @@ export class DdExampleComponent {
         element,
         component: SampleComponent,
         position: 'below',
-        closeOnOutsideClick: true,
+        closeOnOutsideClick: false,
       })
       .pipe(filter(Boolean))
       .subscribe({
@@ -52,10 +53,10 @@ export class DdExampleComponent {
   }
 
   onScrollEnd() {
-    const itemsLength = this.items.length;
-    this.items.push(
-      ...Array.from({ length: 20 }, (_, i) => itemsLength + i + 1)
-    );
-    this.#cdr.markForCheck();
+    // const itemsLength = this.items.length;
+    // this.items.push(
+    //   ...Array.from({ length: 20 }, (_, i) => itemsLength + i + 1)
+    // );
+    // this.#cdr.markForCheck();
   }
 }
