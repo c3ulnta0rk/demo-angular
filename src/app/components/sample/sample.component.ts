@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { C3OnClickOutsideDirective } from '../../directives/onClickOutside.directive';
+import { C3OnClickOutsideDirective } from '../../modules/onClickOutside/onClickOutside.directive';
 
 @Component({
   selector: 'c3-sample',

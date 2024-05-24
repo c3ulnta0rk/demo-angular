@@ -13,7 +13,7 @@ import { AttachScrollDirective } from '../../../../modules/scrollDispatcher/atta
 import { filter } from 'rxjs';
 import { DropdownService } from '../../../../components/dropdown/dropdown.service';
 import { SampleComponent } from '../../../../components/sample/sample.component';
-import { C3OnClickOutsideDirective } from '../../../../directives/onClickOutside.directive';
+import { C3OnClickOutsideDirective } from '../../../../modules/onClickOutside/onClickOutside.directive';
 
 @Component({
   selector: 'c3-dd-example',
