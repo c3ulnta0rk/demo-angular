@@ -33,7 +33,7 @@ import { C3OnClickOutsideDirective } from '../../../../modules/onClickOutside/on
 export class DdExampleComponent {
   #dropdownService = inject(DropdownService);
   #cdr = inject(ChangeDetectorRef);
-  public items = Array.from({ length: 1 }, (_, i) => i + 1);
+  public items = Array.from({ length: 178 }, (_, i) => i + 1);
 
   openDropdown($event: MouseEvent, items: number): void {
     const element = $event.target as HTMLElement;

@@ -1,13 +1,15 @@
-<div class="bg-slate-800 elevation px-2 py-4 flex gap-4">
-  <a routerLink="/home/dd-example" routerLinkActive="active"
-    >dropdown example</a
-  >
-  <a routerLink="/home/encapsulation-example" routerLinkActive="active"
-    >encapsulation-example example</a
-  >
-  <a routerLink="/home/style-test" routerLinkActive="active">test style</a>
-</div>
+<c3-header>
+  <div class="px-2 py-4 flex gap-4">
+    <a routerLink="/home" routerLinkActive="active">Home</a>
+    <a routerLink="/dd-example" routerLinkActive="active">dropdown example</a>
+    <a routerLink="/encapsulation-example" routerLinkActive="active"
+      >encapsulation-example example</a
+    >
+  </div>
+</c3-header>
 
-<div class="grow overflow-auto">
+<div class="grow">
   <router-outlet></router-outlet>
 </div>
+
+<div class="footer bg-slate-800 elevation px-2 py-4">footer</div>

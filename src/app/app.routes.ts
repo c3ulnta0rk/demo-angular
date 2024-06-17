@@ -5,9 +5,8 @@ import { EncapsulationExampleComponent } from './pages/home/pages/encapsulation-
 import { HeaderStylePageComponent } from './pages/home/pages/header-style-page/header-style-page.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
   {
-    path: 'home',
+    path: '',
     component: HomeComponent,
     children: [
       {
@@ -19,13 +18,8 @@ export const routes: Routes = [
         component: EncapsulationExampleComponent,
       },
       {
-        path: 'style-test',
-        component: HeaderStylePageComponent,
-      },
-      {
         path: '',
-        redirectTo: 'dd-example',
-        pathMatch: 'full',
+        component: HeaderStylePageComponent,
       },
     ],
   },

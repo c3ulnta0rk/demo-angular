@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+.header {
+  position: fixed;
+  overflow: hidden;
+  height: 300px; /* Ajustez la hauteur selon vos besoins */
+  width: 100%;
+  background-color: rgba(12, 123, 139);
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(7px);
+    opacity: 0.5;
+    color: darken(rgba(12, 123, 139), 10%);
+    z-index: 0;
+  }
+}
+
+.header-content {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  position: relative;
+  z-index: 1;
+  /* Ajoutez d'autres styles pour votre contenu */
+}
+
+.header-shadow {
+  height: 300px;
+}
