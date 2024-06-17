@@ -5,7 +5,7 @@ import {
   Component,
   inject,
 } from '@angular/core';
-import { CardComponent } from '../../../../components/card/card.component';
+import { C3CardComponent } from '../../../../components/card/card.component';
 import { CarouselItemDirective } from '../../../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../../../components/carousel/carousel.component';
 import { C3OnScrollEndDirective } from '../../../../directives/onScrollEnd.directive';
@@ -21,7 +21,7 @@ import { C3OnClickOutsideDirective } from '../../../../modules/onClickOutside/on
   imports: [
     CommonModule,
     CarouselComponent,
-    CardComponent,
+    C3CardComponent,
     CarouselItemDirective,
     AttachScrollDirective,
     C3OnScrollEndDirective,

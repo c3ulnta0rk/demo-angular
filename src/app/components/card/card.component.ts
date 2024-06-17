@@ -12,4 +12,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     class: 'c3-card',
   },
 })
-export class CardComponent {}
+export class C3CardComponent {}
