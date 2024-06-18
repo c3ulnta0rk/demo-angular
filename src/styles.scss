@@ -23,4 +23,8 @@
   .c3-dropdown {
     @apply absolute shadow shadow-gray-700 p-2 rounded-lg bg-gray-800 #{!important};
   }
+
+  .c3-toolbar {
+    @apply flex items-center justify-between bg-gray-800 p-2;
+  }
 }

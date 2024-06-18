@@ -4,7 +4,7 @@ import {
   Component,
   ViewEncapsulation,
 } from '@angular/core';
-import { C3InputComponent } from '../../../../components/component-input/component-input.component';
+import { C3InputComponent } from '../../components/component-input/component-input.component';
 
 @Component({
   selector: 'c3-encapsulation-example',

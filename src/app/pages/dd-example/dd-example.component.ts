@@ -5,15 +5,15 @@ import {
   Component,
   inject,
 } from '@angular/core';
-import { C3CardComponent } from '../../../../components/card/card.component';
-import { CarouselItemDirective } from '../../../../components/carousel/carousel-item.directive';
-import { CarouselComponent } from '../../../../components/carousel/carousel.component';
-import { C3OnScrollEndDirective } from '../../../../directives/onScrollEnd.directive';
-import { AttachScrollDirective } from '../../../../modules/scrollDispatcher/attachScroll.directive';
+import { C3CardComponent } from '../../components/card/card.component';
+import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
+import { CarouselComponent } from '../../components/carousel/carousel.component';
+import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
+import { AttachScrollDirective } from '../../modules/scrollDispatcher/attachScroll.directive';
 import { filter } from 'rxjs';
-import { DropdownService } from '../../../../components/dropdown/dropdown.service';
-import { SampleComponent } from '../../../../components/sample/sample.component';
-import { C3OnClickOutsideDirective } from '../../../../modules/onClickOutside/onClickOutside.directive';
+import { DropdownService } from '../../components/dropdown/dropdown.service';
+import { SampleComponent } from '../../components/sample/sample.component';
+import { C3OnClickOutsideDirective } from '../../modules/onClickOutside/onClickOutside.directive';
 
 @Component({
   selector: 'c3-dd-example',

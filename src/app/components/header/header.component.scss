@@ -3,11 +3,12 @@
 }
 
 .header {
-  position: fixed;
+  position: absolute;
   overflow: hidden;
   height: 300px; /* Ajustez la hauteur selon vos besoins */
   width: 100%;
   background-color: rgba(12, 123, 139);
+  padding: 0.5rem;
 
   img {
     position: absolute;

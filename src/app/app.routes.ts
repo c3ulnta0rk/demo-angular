@@ -1,13 +1,24 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { DdExampleComponent } from './pages/home/pages/dd-example/dd-example.component';
-import { EncapsulationExampleComponent } from './pages/home/pages/encapsulation-example/encapsulation-example.component';
-import { HeaderStylePageComponent } from './pages/home/pages/header-style-page/header-style-page.component';
+import { DdExampleComponent } from './pages/dd-example/dd-example.component';
+import { EncapsulationExampleComponent } from './pages/encapsulation-example/encapsulation-example.component';
+import { HomePageComponent } from './pages/home/home-page.component';
+import { DefaultLayoutComponent } from './layouts/default/default.layout.component';
+import { HomeLayoutComponent } from './layouts/home/home.layout.component';
 
 export const routes: Routes = [
   {
+    path: 'home',
+    component: HomeLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: HomePageComponent,
+      },
+    ],
+  },
+  {
     path: '',
-    component: HomeComponent,
+    component: DefaultLayoutComponent,
     children: [
       {
         path: 'dd-example',
@@ -17,11 +28,7 @@ export const routes: Routes = [
         path: 'encapsulation-example',
         component: EncapsulationExampleComponent,
       },
-      {
-        path: '',
-        component: HeaderStylePageComponent,
-      },
+      { path: '**', redirectTo: '/home' },
     ],
   },
-  { path: '**', redirectTo: '' },
 ];
