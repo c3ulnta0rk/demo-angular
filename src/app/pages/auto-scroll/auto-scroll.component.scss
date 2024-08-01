@@ -1,0 +1,17 @@
+:host {
+  > div {
+    overflow-y: auto;
+    max-width: 320px;
+    max-height: 320px;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .selected {
+      background-color: #103f3e;
+    }
+  }
+}

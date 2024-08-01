@@ -1,0 +1,7 @@
+<div c3AutoScroll class="rounded shadow border border-teal-700">
+  @for (index of items(); track $index) {
+  <c3-card [class.selected]="selected() === index">
+    <p>coucou {{ index }}</p>
+  </c3-card>
+  }
+</div>

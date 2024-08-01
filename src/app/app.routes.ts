@@ -4,6 +4,7 @@ import { EncapsulationExampleComponent } from './pages/encapsulation-example/enc
 import { HomePageComponent } from './pages/home/home-page.component';
 import { DefaultLayoutComponent } from './layouts/default/default.layout.component';
 import { HomeLayoutComponent } from './layouts/home/home.layout.component';
+import { AutoScrollComponent } from './pages/auto-scroll/auto-scroll.component';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,10 @@ export const routes: Routes = [
       {
         path: 'encapsulation-example',
         component: EncapsulationExampleComponent,
+      },
+      {
+        path: 'auto-scroll',
+        component: AutoScrollComponent,
       },
       { path: '**', redirectTo: '/home' },
     ],
