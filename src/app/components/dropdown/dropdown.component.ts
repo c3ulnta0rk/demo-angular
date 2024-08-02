@@ -138,7 +138,9 @@ export class DropdownComponent implements OnInit {
     const newMountedDropdown = {
       componentRef,
       viewRef,
-      top: new BehaviorSubject(config.element.getBoundingClientRect().bottom),
+      top: new BehaviorSubject(
+        config.element.getBoundingClientRect().bottom + 5
+      ),
       left: new BehaviorSubject(config.element.getBoundingClientRect().left),
       minWidth: new BehaviorSubject(
         config.element.getBoundingClientRect().width

@@ -23,7 +23,7 @@ export class C3AutocompleteComponent {
     HTMLInputElement | HTMLTextAreaElement | null
   >(null);
 
-  public selectedItem = signal<{
+  public focusedItem = signal<{
     position: number;
     item: C3OptionComponent;
   } | null>(null);
@@ -33,7 +33,7 @@ export class C3AutocompleteComponent {
   constructor() {
     effect(
       () => {
-        if (this.selectedItem()) this.selectedItem().item.select();
+        if (this.focusedItem()) this.focusedItem().item.select();
       },
       {
         allowSignalWrites: true,
@@ -52,7 +52,7 @@ export class C3AutocompleteComponent {
       })
       .subscribe({
         next: () => {
-          this.selectedItem.set({
+          this.focusedItem.set({
             position: 0,
             item: this.items()[0],
           });
@@ -62,7 +62,7 @@ export class C3AutocompleteComponent {
 
   public close() {
     this.isOpen.set(false);
-    // this.dropdownService.removeMountedDropdown(this.inputRef());
+    this.dropdownService.removeMountedDropdown(this.inputRef());
   }
 
   public keydown(event: KeyboardEvent) {
@@ -84,11 +84,11 @@ export class C3AutocompleteComponent {
   }
 
   public selectNextItem() {
-    const position = this.selectedItem().position;
+    const position = this.focusedItem().position;
     const nextPosition = position + 1;
     if (nextPosition < this.items().length) {
-      this.selectedItem().item.deselect();
-      this.selectedItem.set({
+      this.focusedItem().item.deselect();
+      this.focusedItem.set({
         position: nextPosition,
         item: this.items()[nextPosition],
       });
@@ -96,11 +96,11 @@ export class C3AutocompleteComponent {
   }
 
   public selectPreviousItem() {
-    const position = this.selectedItem().position;
+    const position = this.focusedItem().position;
     const previousPosition = position - 1;
     if (previousPosition >= 0) {
-      this.selectedItem().item.deselect();
-      this.selectedItem.set({
+      this.focusedItem().item.deselect();
+      this.focusedItem.set({
         position: previousPosition,
         item: this.items()[previousPosition],
       });
