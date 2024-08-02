@@ -1,20 +1,102 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal, viewChild } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
-import { AutoScrollDirective } from '../../directives/autoScroll.directive';
+import { C3AutocompleteModule } from '../../components/autocomplete/autocomplete.module';
+import { C3OptionComponent } from '../../components/autocomplete/option/option.component';
+
+const countries = [
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Antigua and Barbuda',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Austria',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Barbados',
+  'Belarus',
+  'Belgium',
+  'Belize',
+  'Benin',
+  'Bhutan',
+  'Bolivia',
+  'Bosnia and Herzegovina',
+  'Botswana',
+  'Brazil',
+  'Brunei',
+  'Bulgaria',
+  'Burkina Faso',
+  'Burundi',
+  'Cabo Verde',
+  'Cambodia',
+  'Cameroon',
+  'Canada',
+  'Central African Republic',
+  'Chad',
+  'Chile',
+  'China',
+  'Colombia',
+  'Comoros',
+  'Congo, Democratic Republic of the',
+  'Congo, Republic of the',
+  'Costa Rica',
+  'Cote d Ivoire',
+  'Croatia',
+  'Cuba',
+  'Cyprus',
+  'Czech Republic',
+  'Denmark',
+  'Djibouti',
+  'Dominica',
+  'Dominican Republic',
+  'Ecuador',
+  'Egypt',
+  'El Salvador',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Estonia',
+  'Eswatini',
+  'Ethiopia',
+  'Fiji',
+  'Finland',
+  'France',
+  'Gabon',
+  'Gambia',
+  'Georgia',
+  'Germany',
+  'Ghana',
+  'Greece',
+  'Grenada',
+  'Guatemala',
+  'Guinea',
+  'Guinea-Bissau',
+  'Guyana',
+  'Haiti',
+  'Honduras',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+];
 
 @Component({
   selector: 'c3-auto-scroll',
   standalone: true,
-  imports: [CommonModule, C3CardComponent, AutoScrollDirective],
+  imports: [CommonModule, C3AutocompleteModule],
   templateUrl: './auto-scroll.component.html',
   styleUrl: './auto-scroll.component.scss',
 })
 export class AutoScrollComponent {
-  public readonly items = signal(Array.from({ length: 100 }, (_, i) => i));
-  public readonly scrollContainer = viewChild(AutoScrollDirective);
-
-  public readonly selected = computed(() =>
-    this.scrollContainer().selectedIndex()
+  public readonly items = signal(
+    Array.from({ length: countries.length }, (_, i) => countries[i])
   );
 }
