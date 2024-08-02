@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { C3CardComponent } from '../../components/card/card.component';
-import { C3AutocompleteModule } from '../../components/autocomplete/autocomplete.module';
-import { C3OptionComponent } from '../../components/autocomplete/option/option.component';
+import { C3AutocompleteModule } from '../../modules/autocomplete/autocomplete.module';
 
 const countries = [
   'Afghanistan',
