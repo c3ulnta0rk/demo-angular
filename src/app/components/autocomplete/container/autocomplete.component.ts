@@ -1,17 +1,14 @@
 import {
   Component,
   contentChildren,
+  effect,
   inject,
   signal,
   TemplateRef,
   viewChild,
 } from '@angular/core';
 import { C3OptionComponent } from '../option/option.component';
-import {
-  DropdownService,
-  MountedDropdown,
-} from '../../dropdown/dropdown.service';
-import { Observable } from 'rxjs';
+import { DropdownService } from '../../dropdown/dropdown.service';
 
 @Component({
   selector: 'c3-autocomplete',
@@ -19,14 +16,30 @@ import { Observable } from 'rxjs';
   styleUrl: './autocomplete.component.scss',
 })
 export class C3AutocompleteComponent {
-  public readonly templateRef = viewChild('template', { read: TemplateRef });
+  public readonly templateRef = viewChild(TemplateRef);
   public readonly items = contentChildren(C3OptionComponent);
   public readonly isOpen = signal(false);
   public readonly inputRef = signal<
     HTMLInputElement | HTMLTextAreaElement | null
   >(null);
 
+  public selectedItem = signal<{
+    position: number;
+    item: C3OptionComponent;
+  } | null>(null);
+
   private readonly dropdownService = inject(DropdownService);
+
+  constructor() {
+    effect(
+      () => {
+        if (this.selectedItem()) this.selectedItem().item.select();
+      },
+      {
+        allowSignalWrites: true,
+      }
+    );
+  }
 
   public open() {
     this.isOpen.set(true);
@@ -35,13 +48,62 @@ export class C3AutocompleteComponent {
         element: this.inputRef(),
         templateRef: this.templateRef(),
         position: 'below',
-        closeOnOutsideClick: true,
+        closeOnOutsideClick: false,
       })
-      .subscribe();
+      .subscribe({
+        next: () => {
+          this.selectedItem.set({
+            position: 0,
+            item: this.items()[0],
+          });
+        },
+      });
   }
 
   public close() {
     this.isOpen.set(false);
-    this.dropdownService.removeMountedDropdown(this.inputRef());
+    // this.dropdownService.removeMountedDropdown(this.inputRef());
+  }
+
+  public keydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.close();
+    }
+
+    if (event.key === 'Enter') {
+      this.close();
+    }
+
+    if (event.key === 'ArrowDown') {
+      this.selectNextItem();
+    }
+
+    if (event.key === 'ArrowUp') {
+      this.selectPreviousItem();
+    }
+  }
+
+  public selectNextItem() {
+    const position = this.selectedItem().position;
+    const nextPosition = position + 1;
+    if (nextPosition < this.items().length) {
+      this.selectedItem().item.deselect();
+      this.selectedItem.set({
+        position: nextPosition,
+        item: this.items()[nextPosition],
+      });
+    }
+  }
+
+  public selectPreviousItem() {
+    const position = this.selectedItem().position;
+    const previousPosition = position - 1;
+    if (previousPosition >= 0) {
+      this.selectedItem().item.deselect();
+      this.selectedItem.set({
+        position: previousPosition,
+        item: this.items()[previousPosition],
+      });
+    }
   }
 }

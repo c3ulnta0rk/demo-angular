@@ -20,6 +20,7 @@ export interface MountedDropdown<Type> {
   viewRef?: EmbeddedViewRef<any>;
   top: BehaviorSubject<number>;
   left: BehaviorSubject<number>;
+  minWidth: BehaviorSubject<number>;
   visible: BehaviorSubject<boolean>;
 }
 
@@ -49,12 +50,12 @@ export class DropdownService {
     const mountedDropdown = this.#mountedDropdownsMap.get(element);
     if (mountedDropdown) {
       this.#mountedDropdownsMap.delete(element);
-      this.#removedDropdownSubject.next([
-        element,
-        mountedDropdown.componentRef.location.nativeElement as HTMLElement,
-      ]);
+      const mountedElement = this.getMountedElement(mountedDropdown);
+      this.#removedDropdownSubject.next([element, mountedElement]);
       this.#mountedDropdownsMapSubject.next(this.#mountedDropdownsMap);
-      mountedDropdown.componentRef.destroy();
+      const componentRef =
+        mountedDropdown.componentRef || mountedDropdown.viewRef;
+      componentRef?.destroy();
     }
   }
 
@@ -69,8 +70,7 @@ export class DropdownService {
   getMountedDropdownByComponentRefElement(element: HTMLElement) {
     return Array.from(this.#mountedDropdownsMap.entries()).find(
       ([_, mountedDropdown]) => {
-        const mountedElement = mountedDropdown.componentRef.location
-          .nativeElement as HTMLElement;
+        const mountedElement = this.getMountedElement(mountedDropdown);
         return mountedElement.isEqualNode(element);
       }
     );
@@ -113,5 +113,12 @@ export class DropdownService {
 
   getNewDropdownObservable(): Observable<DropdownConfig | null> {
     return this.#newDropdownSubject.asObservable();
+  }
+
+  getMountedElement(mountedDropdown: MountedDropdown<unknown>): HTMLElement {
+    return (
+      (mountedDropdown.componentRef?.location.nativeElement as HTMLElement) ||
+      (mountedDropdown.viewRef?.rootNodes[0] as HTMLElement)
+    );
   }
 }

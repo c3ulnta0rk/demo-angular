@@ -138,8 +138,11 @@ export class DropdownComponent implements OnInit {
     const newMountedDropdown = {
       componentRef,
       viewRef,
-      top: new BehaviorSubject(0),
-      left: new BehaviorSubject(0),
+      top: new BehaviorSubject(config.element.getBoundingClientRect().bottom),
+      left: new BehaviorSubject(config.element.getBoundingClientRect().left),
+      minWidth: new BehaviorSubject(
+        config.element.getBoundingClientRect().width
+      ),
       visible: new BehaviorSubject(true),
     };
 
@@ -165,6 +168,7 @@ export class DropdownComponent implements OnInit {
       : 'none';
     dropdownElement.style.top = `${mountedDropdown.top.value}px`;
     dropdownElement.style.left = `${mountedDropdown.left.value}px`;
+    dropdownElement.style.minWidth = `${mountedDropdown.minWidth.value}px`;
   }
 
   #subscribeToStyles<ComponentType>(
@@ -183,13 +187,17 @@ export class DropdownComponent implements OnInit {
   }
 
   #subscribeToScroll(config: DropdownConfig): void {
-    const [, parentScrollObservable] =
+    const parentScrollObservable =
       this.#scrollDispatcherService.getScrollContainerObservableForElement(
         config.element
       );
 
-    if (parentScrollObservable) {
-      const scrollSubscription = parentScrollObservable.subscribe(() =>
+    if (!parentScrollObservable?.length) return;
+
+    const [, scrollObservable] = parentScrollObservable;
+
+    if (scrollObservable) {
+      const scrollSubscription = scrollObservable.subscribe(() =>
         this.#calculatePosition(config.element, config.position)
       );
       this.#calculatePosition(config.element, config.position);
