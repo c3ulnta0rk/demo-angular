@@ -17,6 +17,8 @@ import { DropdownService } from '../../../components/dropdown/dropdown.service';
 })
 export class C3AutocompleteComponent {
   public readonly templateRef = viewChild(TemplateRef);
+
+  // requis pour l'autocomplete
   public readonly items = contentChildren(C3OptionComponent);
   public readonly isOpen = signal(false);
   public readonly inputRef = signal<
@@ -28,6 +30,7 @@ export class C3AutocompleteComponent {
     item: C3OptionComponent;
   } | null>(null);
 
+  // non requis
   private readonly dropdownService = inject(DropdownService);
 
   constructor() {
