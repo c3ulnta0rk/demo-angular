@@ -1,11 +1,9 @@
-<div class="flex flex-col">
-  <c3-header>
-    <c3-navbar />
-  </c3-header>
+<header c3-header>
+  <c3-navbar />
+</header>
 
-  <div class="grow">
-    <router-outlet></router-outlet>
-  </div>
-</div>
+<main>
+  <router-outlet></router-outlet>
+</main>
 
-<div class="footer bg-slate-800 elevation px-2 py-4">footer</div>
+<footer class="footer bg-slate-800 elevation px-2 py-4">footer</footer>
