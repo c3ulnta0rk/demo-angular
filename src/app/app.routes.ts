@@ -5,6 +5,7 @@ import { HomePageComponent } from './pages/home/home-page.component';
 import { DefaultLayoutComponent } from './layouts/default/default.layout.component';
 import { HomeLayoutComponent } from './layouts/home/home.layout.component';
 import { AutoScrollComponent } from './pages/auto-scroll/auto-scroll.component';
+import { WatchSampleComponent } from './pages/watch-sample/watch-sample.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,10 @@ export const routes: Routes = [
       {
         path: 'auto-scroll',
         component: AutoScrollComponent,
+      },
+      {
+        path: 'watch-sample',
+        component: WatchSampleComponent,
       },
       { path: '**', redirectTo: '/home' },
     ],

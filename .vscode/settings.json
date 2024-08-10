@@ -3,6 +3,12 @@
     "angular-*": {
       "style": "scss",
       "externalTemplate": true
+    },
+    "angular-component": {
+      "skipChangeDetectionOnPush": true
+    },
+    "angular-page": {
+      "skipChangeDetectionOnPush": true
     }
   }
 }
