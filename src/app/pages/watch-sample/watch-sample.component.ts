@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { watch } from '../../utils/watch';
-import { SnackbarService } from '../../components/snackbar/snackbar.service';
+import { SnackbarService } from '../../modules/snackbar/snackbar.service';
+import { SnackbarModule } from '../../modules/snackbar/snackbar.module';
 
 @Component({
   selector: 'c3-watch-sample',
   standalone: true,
-  imports: [CommonModule],
-  providers: [SnackbarService],
+  imports: [CommonModule, SnackbarModule],
   templateUrl: './watch-sample.component.html',
   styleUrl: './watch-sample.component.scss',
 })
@@ -19,6 +19,12 @@ export class WatchSampleComponent {
     watch(this.counter, (value) => {
       console.log('counter:', value);
     });
+
+    setTimeout(() => {
+      this.snackbarService.open(
+        'Open the console to see the counter value changes in real-time (and skip the initialValue)'
+      );
+    }, 1000);
   }
 
   public increment(): void {

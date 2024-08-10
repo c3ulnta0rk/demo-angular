@@ -3,6 +3,7 @@ import {
   WritableSignal,
   untracked,
   effect,
+  Signal,
 } from '@angular/core';
 
 export type WatchOptions = {
@@ -10,7 +11,7 @@ export type WatchOptions = {
 } & CreateEffectOptions;
 
 export function watch<T>(
-  signalValue: WritableSignal<T>,
+  signalValue: WritableSignal<T> | Signal<T>,
   callback?: (value: T, oldValue?: T) => void,
   options?: WatchOptions
 ): void {
