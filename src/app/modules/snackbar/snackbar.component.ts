@@ -8,7 +8,7 @@ import {
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { watch } from '../../utils/watch';
+import { c3Watch } from '../../utils/watch';
 
 @Component({
   selector: 'c3-snackbar',

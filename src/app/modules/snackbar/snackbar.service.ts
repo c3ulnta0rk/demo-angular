@@ -5,9 +5,9 @@ import {
   TemplateRef,
   Type,
 } from '@angular/core';
-import { InjectorService } from '../../services/injector';
+import { C3InjectorService } from '../../services/injector';
 import { SnackbarComponent } from './snackbar.component';
-import { applyInputValues } from '../../utils/fill-inputs';
+import { c3ApplyInputValues } from '../../utils/fill-inputs';
 
 export interface SnackbarConfig {
   duration?: number;
@@ -18,7 +18,7 @@ export interface SnackbarConfig {
   providedIn: 'root',
 })
 export class SnackbarService {
-  private readonly injectorService = inject(InjectorService);
+  private readonly injectorService = inject(C3InjectorService);
 
   public open(
     message: string | ComponentRef<any> | TemplateRef<any>,
@@ -28,9 +28,9 @@ export class SnackbarService {
     if (!snackbarRef) return;
 
     if (typeof message === 'string') {
-      applyInputValues(SnackbarComponent, { message }, snackbarRef);
+      c3ApplyInputValues(SnackbarComponent, { message }, snackbarRef);
     } else if (message instanceof TemplateRef) {
-      applyInputValues(
+      c3ApplyInputValues(
         SnackbarComponent,
         { templateRef: message },
         snackbarRef
@@ -39,7 +39,7 @@ export class SnackbarService {
       const componentRef = this.injectorService.injectComponent(
         message.componentType
       );
-      applyInputValues(SnackbarComponent, { componentRef }, snackbarRef);
+      c3ApplyInputValues(SnackbarComponent, { componentRef }, snackbarRef);
     }
 
     const duration = config?.duration || 3000;

@@ -10,7 +10,7 @@ function _getInputProperties<C>(component: Type<C>) {
   return inputs;
 }
 
-export function applyInputValues<C>(
+export function c3ApplyInputValues<C>(
   component: Type<C>,
   inputs: Partial<Record<keyof C, unknown>>,
   componentRef: ComponentRef<C>

@@ -10,7 +10,7 @@ export type WatchOptions = {
   immediate?: boolean;
 } & CreateEffectOptions;
 
-export function watch<T>(
+export function c3Watch<T>(
   signalValue: WritableSignal<T> | Signal<T>,
   callback?: (value: T, oldValue?: T) => void,
   options?: WatchOptions

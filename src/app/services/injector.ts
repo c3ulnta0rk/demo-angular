@@ -14,7 +14,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class InjectorService {
+export class C3InjectorService {
   private readonly applicationRef = inject(ApplicationRef);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}

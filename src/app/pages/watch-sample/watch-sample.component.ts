@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { watch } from '../../utils/watch';
+import { c3Watch } from '../../utils/watch';
 import { SnackbarService } from '../../modules/snackbar/snackbar.service';
 import { SnackbarModule } from '../../modules/snackbar/snackbar.module';
 
@@ -16,7 +16,7 @@ export class WatchSampleComponent {
   private readonly snackbarService = inject(SnackbarService);
 
   constructor() {
-    watch(this.counter, (value) => {
+    c3Watch(this.counter, (value) => {
       console.log('counter:', value);
     });
 
