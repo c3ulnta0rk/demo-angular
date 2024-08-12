@@ -3,12 +3,15 @@ import {
   contentChildren,
   effect,
   inject,
+  Injector,
   signal,
   TemplateRef,
   viewChild,
 } from '@angular/core';
 import { C3OptionComponent } from '../option/option.component';
-import { DropdownService } from '../../../components/dropdown/dropdown.service';
+import { C3DropdownService } from '../../dropdown/dropdown.service';
+import { C3DropdownComponent } from '../../dropdown/dropdown.component';
+import { c3Watch } from '../../../utils/watch';
 
 @Component({
   selector: 'c3-autocomplete',
@@ -24,6 +27,7 @@ export class C3AutocompleteComponent {
   public readonly inputRef = signal<
     HTMLInputElement | HTMLTextAreaElement | null
   >(null);
+  public readonly dropdownRef = signal<C3DropdownComponent<any>>(null);
 
   public focusedItem = signal<{
     position: number;
@@ -31,7 +35,8 @@ export class C3AutocompleteComponent {
   } | null>(null);
 
   // non requis
-  private readonly dropdownService = inject(DropdownService);
+  private readonly dropdownService = inject(C3DropdownService);
+  private readonly _injector = inject(Injector);
 
   constructor() {
     effect(
@@ -45,27 +50,38 @@ export class C3AutocompleteComponent {
   }
 
   public open() {
+    if (this.isOpen()) return;
+
     this.isOpen.set(true);
-    this.dropdownService
-      .toggleDropdown({
-        element: this.inputRef(),
-        templateRef: this.templateRef(),
-        position: 'below',
-        closeOnOutsideClick: false,
-      })
-      .subscribe({
-        next: () => {
-          this.focusedItem.set({
-            position: 0,
-            item: this.items()[0],
-          });
+    const dropdown = this.dropdownService.open({
+      element: this.inputRef(),
+      templateRef: this.templateRef(),
+      position: 'below',
+      closeOnOutsideClick: false,
+    });
+
+    if (dropdown) {
+      this.dropdownRef.set(dropdown);
+      c3Watch(
+        dropdown.componentRefInstance,
+        (instance) => {
+          console.log('instance', instance);
+          if (instance) {
+            console.log('instance', instance);
+            instance.items = this.items();
+          }
         },
-      });
+        {
+          immediate: true,
+          injector: this._injector,
+        }
+      );
+    }
   }
 
   public close() {
     this.isOpen.set(false);
-    this.dropdownService.removeMountedDropdown(this.inputRef());
+    // this.dropdownService.removeMountedDropdown(this.inputRef());
   }
 
   public keydown(event: KeyboardEvent) {

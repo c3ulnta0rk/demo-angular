@@ -15,11 +15,16 @@ export function c3Watch<T>(
   callback?: (value: T, oldValue?: T) => void,
   options?: WatchOptions
 ): void {
-  if (options?.immediate) callback?.(untracked(signalValue));
+  const initialValue = untracked(signalValue);
+  let oldValue: T | undefined;
 
-  effect((onCleanup) => {
-    const oldValue = signalValue();
+  if (options?.immediate) callback?.(initialValue);
 
-    onCleanup(() => callback?.(untracked(signalValue), oldValue));
+  effect(() => {
+    const value = signalValue();
+    if (oldValue !== value) {
+      callback?.(value, oldValue || initialValue);
+      oldValue = value;
+    }
   }, options);
 }

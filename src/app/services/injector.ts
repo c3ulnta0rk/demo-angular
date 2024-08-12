@@ -6,7 +6,6 @@ import {
   ComponentRef,
   Type,
   createComponent,
-  Injector,
   PLATFORM_ID,
   Inject,
 } from '@angular/core';

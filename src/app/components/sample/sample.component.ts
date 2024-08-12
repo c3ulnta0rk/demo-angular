@@ -8,12 +8,11 @@ import { C3OnClickOutsideDirective } from '../../modules/onClickOutside/onClickO
   imports: [CommonModule, C3OnClickOutsideDirective],
   templateUrl: './sample.component.html',
   styleUrl: './sample.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SampleComponent {
   @Input() public txt: string = 'Sample Component';
 
   clickOutside($event: any) {
-    console.log('clickOutside', $event);
+    // console.log('clickOutside', $event);
   }
 }

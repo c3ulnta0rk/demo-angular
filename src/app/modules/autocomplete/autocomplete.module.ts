@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { C3AutocompleteComponent } from './container/autocomplete.component';
 import { C3AutocompleteDirective } from './directive/autocomplete.directive';
 import { C3OptionComponent } from './option/option.component';
-import { DropdownComponent } from '../../components/dropdown/dropdown.component';
+import { C3DropdownModule } from '../dropdown/dropdown.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +11,7 @@ import { DropdownComponent } from '../../components/dropdown/dropdown.component'
     C3AutocompleteComponent,
     C3OptionComponent,
   ],
-  imports: [CommonModule, DropdownComponent],
+  imports: [CommonModule, C3DropdownModule],
   exports: [
     C3AutocompleteComponent,
     C3AutocompleteDirective,

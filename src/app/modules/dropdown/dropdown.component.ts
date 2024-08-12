@@ -2,17 +2,31 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  computed,
   DestroyRef,
   effect,
   inject,
   input,
+  output,
   signal,
   TemplateRef,
   Type,
+  viewChild,
   ViewContainerRef,
 } from '@angular/core';
 import { ScrollDispatcherService } from '../scrollDispatcher/scrollDispatcher.service';
 import { C3MountedDropdown } from './dropdown.service';
+import {
+  filter,
+  fromEvent,
+  interval,
+  map,
+  skipUntil,
+  Subscription,
+  tap,
+} from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { c3Watch } from '../../utils/watch';
 
 @Component({
   selector: 'c3-dropdown',
@@ -22,48 +36,169 @@ import { C3MountedDropdown } from './dropdown.service';
   styleUrl: './dropdown.component.scss',
 })
 export class C3DropdownComponent<T> {
-  public readonly element = input<HTMLElement>();
-  public readonly component = input<Type<T>>();
-  public readonly templateRef = input<TemplateRef<T>>();
+  public readonly element = input<HTMLElement | undefined>();
+  public readonly component = input<Type<T> | undefined>();
+  public readonly templateRef = input<TemplateRef<T> | undefined>();
   public readonly position = input<
     'above' | 'beside' | 'below' | 'left' | 'auto'
   >('auto');
   public readonly closeOnOutsideClick = input<boolean>(false);
 
-  public readonly componentRef = signal<ComponentRef<T>>(undefined);
+  public readonly close = output<void>();
+
+  public readonly componentRef = signal<ComponentRef<T> | undefined>(undefined);
+
+  public readonly componentRefInstance = computed(
+    () => this.componentRef()?.instance
+  );
 
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly scrollDispatcherService = inject(ScrollDispatcherService);
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly viewContainerRef = viewChild('c3Dropdown', {
+    read: ViewContainerRef,
+  });
 
   public readonly top = signal<number>(0);
   public readonly left = signal<number>(0);
   public readonly minWidth = signal<number>(0);
   public readonly visible = signal<boolean>(false);
 
+  private readonly scrollSubscription = signal<Subscription | undefined>(
+    undefined
+  );
+  private readonly clickOutsideSubscription = signal<Subscription | undefined>(
+    undefined
+  );
+
   constructor() {
-    effect(() => {
-      if (this.component()) {
-        this.openDropdown();
+    effect(
+      () => {
+        if (this.component() && !this.componentRef()) {
+          this.openDropdown();
+        }
+      },
+      {
+        allowSignalWrites: true,
       }
-    });
+    );
   }
 
   private openDropdown(): void {
-    if (!this.component() && !this.templateRef()) return;
+    if ((!this.component() && !this.templateRef()) || !this.viewContainerRef())
+      return;
 
     if (this.component()) {
-      const componentRef = this.viewContainerRef.createComponent(
+      const componentRef = this.viewContainerRef().createComponent(
         this.component()
       );
       this.componentRef.set(componentRef);
     } else if (this.templateRef()) {
-      const viewRef = this.viewContainerRef.createEmbeddedView(
+      const viewRef = this.viewContainerRef().createEmbeddedView(
         this.templateRef()
       );
     }
+
+    this.#calculatePosition(this.position());
+
+    this.#subscribeToScroll();
+
+    if (this.closeOnOutsideClick()) {
+      this.#clickOutsideSubscription();
+    }
+  }
+
+  #getClickOutsideObservable(element: HTMLElement) {
+    return fromEvent(document, 'click').pipe(
+      filter((event) => !element.contains(event.target as Node)),
+      map(() => element)
+    );
+  }
+
+  #clickOutsideSubscription(): void {
+    if (!this.element() || !this.componentRef()) return;
+
+    const clickOutsideSubscription = this.#getClickOutsideObservable(
+      this.element()
+    )
+      .pipe(
+        skipUntil(interval(100)),
+        filter(Boolean),
+        filter((target) => this.element().isEqualNode(target)),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(() => {
+        this.close.emit();
+
+        this.clickOutsideSubscription().unsubscribe();
+        this.clickOutsideSubscription.set(undefined);
+      });
+
+    this.clickOutsideSubscription.set(clickOutsideSubscription);
+  }
+
+  #subscribeToScroll(): void {
+    if (!this.element()) return;
+
+    const parentScrollObservable =
+      this.scrollDispatcherService.getScrollContainerObservableForElement(
+        this.element()
+      );
+
+    if (!parentScrollObservable?.length) return;
+
+    const [, scrollObservable] = parentScrollObservable;
+
+    if (scrollObservable) {
+      const scrollSubscription = scrollObservable.subscribe(() =>
+        this.#calculatePosition(this.position())
+      );
+
+      this.scrollSubscription.set(scrollSubscription);
+    }
+  }
+
+  #calculatePosition<T>(position: string): void {
+    const viewportHeight = window.innerHeight;
+    const element = this.element();
+
+    if (!this.componentRef()) return;
+
+    const rect = element.getBoundingClientRect();
+    this.top.set(rect.top);
+    this.left.set(rect.left);
+
+    const [scrollContainerElement] =
+      this.scrollDispatcherService.getScrollContainerObservableForElement(
+        element
+      );
+    const scrollContainerRect = scrollContainerElement?.getBoundingClientRect();
+
+    // // Check if the element is out of the scroll container
+    const isOutOfScroller = this.#isOutOfScroller(rect, scrollContainerRect);
+
+    if (isOutOfScroller) {
+      this.visible.set(false);
+    } else {
+      this.visible.set(true);
+      this.#adjustPosition(rect, position, viewportHeight);
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  #isOutOfScroller(
+    rect: DOMRect,
+    scrollContainerRect: DOMRect | undefined
+  ): boolean {
+    return (
+      scrollContainerRect &&
+      (rect.top < scrollContainerRect.top ||
+        rect.bottom > scrollContainerRect.bottom ||
+        rect.left < scrollContainerRect.left ||
+        rect.right > scrollContainerRect.right)
+    );
   }
 
   #adjustPosition(
@@ -110,9 +245,10 @@ export class C3DropdownComponent<T> {
     viewportHeight: number
   ): void {
     this.top.update((oldvalue) => {
+      if (!rect || !elementHeight || !viewportHeight) return oldvalue;
       const bottom = rect.bottom + 100;
       const diff = bottom - viewportHeight;
-      return oldvalue + elementHeight + (diff > 0 ? diff + 20 : 0);
+      return oldvalue + elementHeight + (diff > 0 ? diff + 5 : 5);
     });
   }
 }

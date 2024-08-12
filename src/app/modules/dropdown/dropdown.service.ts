@@ -33,21 +33,38 @@ export interface C3MountedDropdown<Type> {
 })
 export class C3DropdownService {
   private readonly _injector = inject(C3InjectorService);
-  private readonly mountedDropdowns = new Map<
-    HTMLElement,
-    C3MountedDropdown<any>
+  private readonly _mountedDropdowns = new Map<
+    C3DropdownComponent<any>,
+    ComponentRef<C3DropdownComponent<any>>
   >();
 
   public open<MountedComponent>(
     config: C3DropdownConfig<MountedComponent>
-  ): ComponentRef<MountedComponent> | void {
+  ): C3DropdownComponent<MountedComponent> | void {
     const dropdown = this._injector.injectComponent(
       C3DropdownComponent<MountedComponent>
     );
     if (!dropdown) return;
 
+    this._mountedDropdowns.set(dropdown.instance, dropdown);
+
     c3ApplyInputValues(C3DropdownComponent, config, dropdown);
 
-    return dropdown.instance.componentRef();
+    const closeSubscription = dropdown.instance.close.subscribe(() => {
+      this.close(dropdown);
+      closeSubscription.unsubscribe();
+    });
+
+    return dropdown.instance;
+  }
+
+  public close(
+    componentRef: ComponentRef<any> | C3DropdownComponent<any>
+  ): void {
+    if (componentRef instanceof C3DropdownComponent) {
+      const mountedDropdown = this._mountedDropdowns.get(componentRef);
+      this._mountedDropdowns.delete(componentRef);
+      this._injector.removeComponent(mountedDropdown);
+    } else return this._injector.removeComponent(componentRef);
   }
 }

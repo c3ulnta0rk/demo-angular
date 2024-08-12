@@ -1,3 +1,9 @@
-<div class="c3-dropdown" [style.top]="top()" [style.left]="left()">
-  <ng-template />
+<div
+  class="c3-dropdown"
+  [style.top.px]="top()"
+  [style.left.px]="left()"
+  [style.visible]="visible()"
+  [style.min-width.px]="minWidth()"
+>
+  <ng-template #c3Dropdown />
 </div>

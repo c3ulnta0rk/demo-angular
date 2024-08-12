@@ -3,17 +3,22 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ComponentRef,
+  effect,
   inject,
+  Injector,
+  signal,
 } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
 import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
 import { AttachScrollDirective } from '../../modules/scrollDispatcher/attachScroll.directive';
-import { filter } from 'rxjs';
+import { filter, fromEvent } from 'rxjs';
 import { SampleComponent } from '../../components/sample/sample.component';
 import { C3DropdownService } from '../../modules/dropdown/dropdown.service';
 import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
+import { C3DropdownComponent } from '../../modules/dropdown/dropdown.component';
 
 @Component({
   selector: 'c3-dd-example',
@@ -29,34 +34,49 @@ import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
   ],
   templateUrl: './dd-example.component.html',
   styleUrl: './dd-example.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DdExampleComponent {
   private readonly _dropdown = inject(C3DropdownService);
-  private readonly _cdr = inject(ChangeDetectorRef);
   public readonly items = Array.from({ length: 178 }, (_, i) => i + 1);
+  private readonly dropdowns = signal(
+    new Map<number, C3DropdownComponent<SampleComponent>>()
+  );
+
+  private readonly _injector = inject(Injector);
 
   openDropdown($event: MouseEvent, items: number): void {
     const element = $event.target as HTMLElement;
-    this._dropdown.open<SampleComponent>({
-      element,
-      component: SampleComponent,
-      position: 'below',
-      closeOnOutsideClick: false,
-    });
-    // this.#dropdownService
-    //   .toggleDropdown<SampleComponent>({
-    //     element,
-    //     component: SampleComponent,
-    //     position: 'below',
-    //     closeOnOutsideClick: false,
-    //   })
-    //   .pipe(filter(Boolean))
-    //   .subscribe({
-    //     next: (mountedDropdown) => {
-    //       mountedDropdown.componentRef.instance.txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
-    //     },
-    //   });
+    if (this.dropdowns().has(items)) {
+      this._dropdown.close(this.dropdowns().get(items));
+      this.dropdowns().delete(items);
+    } else {
+      const mountedDropdown = this._dropdown.open<SampleComponent>({
+        element,
+        component: SampleComponent,
+        position: 'below',
+        closeOnOutsideClick: false,
+      });
+
+      if (!mountedDropdown) return;
+
+      effect(
+        () => {
+          if (mountedDropdown.componentRef() && !this.dropdowns().has(items)) {
+            this.dropdowns().set(items, mountedDropdown);
+
+            mountedDropdown.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
+
+            const closeSubscription = mountedDropdown.close.subscribe(() => {
+              this.dropdowns().delete(items);
+              closeSubscription.unsubscribe();
+            });
+          }
+        },
+        {
+          injector: this._injector,
+        }
+      );
+    }
   }
 
   onScrollEnd() {
