@@ -14,10 +14,10 @@ export class ScrollDispatcherService {
   }
 
   public getScrollContainerObservableForElement(
-    element: HTMLElement,
-  ): [Element, Observable<unknown>] | null {
+    element: HTMLElement
+  ): [Element, Observable<unknown>] {
     const scrollContainerElement = element.closest('.c3-scrollable_container');
-    if (!scrollContainerElement) return null;
+    if (!scrollContainerElement) return [element, fromEvent(element, 'scroll')];
 
     return [scrollContainerElement, this.scrollMap.get(scrollContainerElement)];
   }
@@ -35,7 +35,7 @@ export class ScrollDispatcherService {
     });
     this.scrollSubscriptions.set(
       element.nativeElement,
-      scrollEventSubscription,
+      scrollEventSubscription
     );
   }
 

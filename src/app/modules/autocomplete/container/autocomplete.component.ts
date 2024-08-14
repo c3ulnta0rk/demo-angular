@@ -39,12 +39,22 @@ export class C3AutocompleteComponent {
   private readonly _injector = inject(Injector);
 
   constructor() {
-    effect(
-      () => {
-        if (this.focusedItem()) this.focusedItem().item.select();
-      },
+    effect(() => this.focusedItem()?.item && this.focusedItem().item.select(), {
+      allowSignalWrites: true,
+    });
+
+    c3Watch(
+      this.items,
+      (items, oldvalue) =>
+        items.length > 0 &&
+        !oldvalue.length &&
+        this.focusedItem.set({
+          position: 0,
+          item: items[0],
+        }),
       {
         allowSignalWrites: true,
+        immediate: true,
       }
     );
   }
@@ -61,27 +71,14 @@ export class C3AutocompleteComponent {
     });
 
     if (dropdown) {
-      this.dropdownRef.set(dropdown);
-      c3Watch(
-        dropdown.componentRefInstance,
-        (instance) => {
-          console.log('instance', instance);
-          if (instance) {
-            console.log('instance', instance);
-            instance.items = this.items();
-          }
-        },
-        {
-          immediate: true,
-          injector: this._injector,
-        }
-      );
+      dropdown.afterMounted.subscribe((ref) => {
+        this.dropdownRef.set(ref);
+      });
     }
   }
 
   public close() {
     this.isOpen.set(false);
-    // this.dropdownService.removeMountedDropdown(this.inputRef());
   }
 
   public keydown(event: KeyboardEvent) {
@@ -103,10 +100,10 @@ export class C3AutocompleteComponent {
   }
 
   public selectNextItem() {
-    const position = this.focusedItem().position;
+    const position = this.focusedItem()?.position ?? -1;
     const nextPosition = position + 1;
     if (nextPosition < this.items().length) {
-      this.focusedItem().item.deselect();
+      this.focusedItem()?.item.deselect();
       this.focusedItem.set({
         position: nextPosition,
         item: this.items()[nextPosition],
@@ -115,10 +112,10 @@ export class C3AutocompleteComponent {
   }
 
   public selectPreviousItem() {
-    const position = this.focusedItem().position;
+    const position = this.focusedItem()?.position ?? -1;
     const previousPosition = position - 1;
     if (previousPosition >= 0) {
-      this.focusedItem().item.deselect();
+      this.focusedItem()?.item.deselect();
       this.focusedItem.set({
         position: previousPosition,
         item: this.items()[previousPosition],

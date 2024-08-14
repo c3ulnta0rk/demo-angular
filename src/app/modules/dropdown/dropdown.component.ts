@@ -15,18 +15,17 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { ScrollDispatcherService } from '../scrollDispatcher/scrollDispatcher.service';
-import { C3MountedDropdown } from './dropdown.service';
 import {
   filter,
   fromEvent,
   interval,
   map,
+  Observable,
   skipUntil,
+  Subject,
   Subscription,
-  tap,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { c3Watch } from '../../utils/watch';
 
 @Component({
   selector: 'c3-dropdown',
@@ -75,7 +74,7 @@ export class C3DropdownComponent<T> {
   constructor() {
     effect(
       () => {
-        if (this.component() && !this.componentRef()) {
+        if ((this.component() || this.templateRef()) && !this.componentRef()) {
           this.openDropdown();
         }
       },
@@ -85,9 +84,9 @@ export class C3DropdownComponent<T> {
     );
   }
 
-  private openDropdown(): void {
+  private openDropdown() {
     if ((!this.component() && !this.templateRef()) || !this.viewContainerRef())
-      return;
+      throw new Error('ViewContainerRef not found');
 
     if (this.component()) {
       const componentRef = this.viewContainerRef().createComponent(
@@ -98,6 +97,8 @@ export class C3DropdownComponent<T> {
       const viewRef = this.viewContainerRef().createEmbeddedView(
         this.templateRef()
       );
+
+      this.componentRef.set(viewRef.rootNodes[0] as ComponentRef<T>);
     }
 
     this.#calculatePosition(this.position());
@@ -107,6 +108,8 @@ export class C3DropdownComponent<T> {
     if (this.closeOnOutsideClick()) {
       this.#clickOutsideSubscription();
     }
+
+    const componentMounted = new Subject<ComponentRef<T> | undefined>();
   }
 
   #getClickOutsideObservable(element: HTMLElement) {
@@ -163,11 +166,12 @@ export class C3DropdownComponent<T> {
     const viewportHeight = window.innerHeight;
     const element = this.element();
 
-    if (!this.componentRef()) return;
+    if (!this.componentRef() || !element) return;
 
     const rect = element.getBoundingClientRect();
     this.top.set(rect.top);
     this.left.set(rect.left);
+    this.minWidth.set(rect.width);
 
     const [scrollContainerElement] =
       this.scrollDispatcherService.getScrollContainerObservableForElement(

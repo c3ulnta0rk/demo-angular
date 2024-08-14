@@ -1,8 +1,10 @@
 import {
   ComponentRef,
+  effect,
   EmbeddedViewRef,
   inject,
   Injectable,
+  Injector,
   Signal,
   TemplateRef,
   Type,
@@ -10,6 +12,7 @@ import {
 import { C3InjectorService } from '../../services/injector';
 import { c3ApplyInputValues } from '../../utils/fill-inputs';
 import { C3DropdownComponent } from './dropdown.component';
+import { Subject } from 'rxjs';
 
 export interface C3DropdownConfig<T = any> {
   element: HTMLElement;
@@ -32,19 +35,18 @@ export interface C3MountedDropdown<Type> {
   providedIn: 'root',
 })
 export class C3DropdownService {
-  private readonly _injector = inject(C3InjectorService);
+  private readonly _c3Injector = inject(C3InjectorService);
   private readonly _mountedDropdowns = new Map<
     C3DropdownComponent<any>,
     ComponentRef<C3DropdownComponent<any>>
   >();
+  private readonly _injector = inject(Injector);
 
-  public open<MountedComponent>(
-    config: C3DropdownConfig<MountedComponent>
-  ): C3DropdownComponent<MountedComponent> | void {
-    const dropdown = this._injector.injectComponent(
+  public open<MountedComponent>(config: C3DropdownConfig<MountedComponent>) {
+    const dropdown = this._c3Injector.injectComponent(
       C3DropdownComponent<MountedComponent>
     );
-    if (!dropdown) return;
+    if (!dropdown) throw new Error('Could not create dropdown component');
 
     this._mountedDropdowns.set(dropdown.instance, dropdown);
 
@@ -54,8 +56,27 @@ export class C3DropdownService {
       this.close(dropdown);
       closeSubscription.unsubscribe();
     });
+    const afterMounted = new Subject<C3DropdownComponent<MountedComponent>>();
 
-    return dropdown.instance;
+    effect(
+      () => {
+        if (dropdown.instance.componentRef()) {
+          afterMounted.next(dropdown.instance);
+          afterMounted.complete();
+        }
+      },
+      {
+        injector: this._injector,
+        allowSignalWrites: true,
+      }
+    );
+
+    return {
+      close: () => {
+        this.close(dropdown);
+      },
+      afterMounted,
+    };
   }
 
   public close(
@@ -64,7 +85,7 @@ export class C3DropdownService {
     if (componentRef instanceof C3DropdownComponent) {
       const mountedDropdown = this._mountedDropdowns.get(componentRef);
       this._mountedDropdowns.delete(componentRef);
-      this._injector.removeComponent(mountedDropdown);
-    } else return this._injector.removeComponent(componentRef);
+      this._c3Injector.removeComponent(mountedDropdown);
+    } else return this._c3Injector.removeComponent(componentRef);
   }
 }

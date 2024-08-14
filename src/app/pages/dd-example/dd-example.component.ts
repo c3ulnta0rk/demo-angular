@@ -59,23 +59,15 @@ export class DdExampleComponent {
 
       if (!mountedDropdown) return;
 
-      effect(
-        () => {
-          if (mountedDropdown.componentRef() && !this.dropdowns().has(items)) {
-            this.dropdowns().set(items, mountedDropdown);
+      mountedDropdown.afterMounted.subscribe((ref) => {
+        ref.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
+        if (!this.dropdowns().has(items)) this.dropdowns().set(items, ref);
 
-            mountedDropdown.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
-
-            const closeSubscription = mountedDropdown.close.subscribe(() => {
-              this.dropdowns().delete(items);
-              closeSubscription.unsubscribe();
-            });
-          }
-        },
-        {
-          injector: this._injector,
-        }
-      );
+        const closeSubscription = ref.close.subscribe(() => {
+          this.dropdowns().delete(items);
+          closeSubscription.unsubscribe();
+        });
+      });
     }
   }
 
