@@ -58,11 +58,12 @@ export class C3DropdownService {
     });
     const afterMounted = new Subject<C3DropdownComponent<MountedComponent>>();
 
-    effect(
+    const watchInstance = effect(
       () => {
         if (dropdown.instance.componentRef()) {
           afterMounted.next(dropdown.instance);
           afterMounted.complete();
+          watchInstance.destroy();
         }
       },
       {

@@ -109,7 +109,7 @@ export class C3DropdownComponent<T> {
       this.#clickOutsideSubscription();
     }
 
-    const componentMounted = new Subject<ComponentRef<T> | undefined>();
+    // const componentMounted = new Subject<ComponentRef<T> | undefined>();
   }
 
   #getClickOutsideObservable(element: HTMLElement) {

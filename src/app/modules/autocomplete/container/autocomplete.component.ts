@@ -67,7 +67,7 @@ export class C3AutocompleteComponent {
       element: this.inputRef(),
       templateRef: this.templateRef(),
       position: 'below',
-      closeOnOutsideClick: false,
+      closeOnOutsideClick: true,
     });
 
     if (dropdown) {
