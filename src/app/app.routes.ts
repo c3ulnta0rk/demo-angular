@@ -7,22 +7,22 @@ import { HomeLayoutComponent } from './layouts/home/home.layout.component';
 import { AutoScrollComponent } from './pages/auto-scroll/auto-scroll.component';
 import { WatchSampleComponent } from './pages/watch-sample/watch-sample.component';
 import { TemplateRefComponent } from './pages/template-ref/template-ref.component';
+import { AnimationExampleComponent } from './pages/animation-example/animation-example.component';
 
 export const routes: Routes = [
-  {
-    path: 'home',
-    component: HomeLayoutComponent,
-    children: [
-      {
-        path: '',
-        component: HomePageComponent,
-      },
-    ],
-  },
+  // {
+  //   path: 'home',
+  //   component: HomeLayoutComponent,
+  //   children: [],
+  // },
   {
     path: '',
     component: DefaultLayoutComponent,
     children: [
+      {
+        path: 'home',
+        component: HomePageComponent,
+      },
       {
         path: 'dd-example',
         component: DdExampleComponent,
@@ -42,6 +42,10 @@ export const routes: Routes = [
       {
         path: 'template-ref-sample',
         component: TemplateRefComponent,
+      },
+      {
+        path: 'animation-example',
+        component: AnimationExampleComponent,
       },
       { path: '**', redirectTo: '/home' },
     ],

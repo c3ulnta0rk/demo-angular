@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { HeaderComponent } from '../../components/header/header.component';
+import expansionAnimation from '../animation-example/animations/expansion.animation';
 
 @Component({
   selector: 'c3-home-page',
@@ -10,6 +11,7 @@ import { HeaderComponent } from '../../components/header/header.component';
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [expansionAnimation],
 })
 export class HomePageComponent {
   public homeExpanded = false;

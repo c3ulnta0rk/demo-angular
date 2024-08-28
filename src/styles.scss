@@ -36,6 +36,10 @@
     @apply bg-slate-100 shadow rounded p-1;
   }
 
+  a.active {
+    @apply bg-teal-800 shadow-teal-800;
+  }
+
   @media (prefers-color-scheme: dark) {
     app-root {
       @apply bg-gray-900 text-white;
