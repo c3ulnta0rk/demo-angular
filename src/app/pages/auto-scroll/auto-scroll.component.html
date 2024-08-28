@@ -1,9 +1,4 @@
-<input
-  class="shadow rounded p-1 bg-slate-700"
-  type="text"
-  [c3Autocomplete]="auto"
-  placeholder="focus this"
-/>
+<input type="text" [c3Autocomplete]="auto" placeholder="focus this" />
 
 <c3-autocomplete #auto>
   @for (option of items(); track $index) {

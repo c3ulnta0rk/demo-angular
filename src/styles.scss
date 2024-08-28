@@ -7,7 +7,7 @@
   html,
   body,
   app-root {
-    @apply bg-gray-900 text-white font-sans p-0 m-0;
+    @apply font-sans p-0 m-0;
   }
 
   app-root {
@@ -17,14 +17,48 @@
   @include core();
 
   .c3-card {
-    @apply block bg-gray-700 shadow shadow-gray-700 p-2 rounded-lg;
+    @apply block bg-gray-100 shadow shadow-gray-100 p-2 rounded-lg;
   }
 
   .c3-dropdown {
-    @apply absolute shadow shadow-gray-700 p-2 rounded-lg bg-gray-800 #{!important};
+    @apply absolute shadow shadow-gray-100 p-2 rounded-lg bg-gray-200 #{!important};
   }
 
   .c3-toolbar {
-    @apply flex items-center justify-between bg-gray-800 p-2;
+    @apply flex items-center justify-between bg-gray-200 p-2;
+  }
+
+  .c3-footer {
+    @apply bg-slate-200 px-2 py-4;
+  }
+
+  input {
+    @apply bg-slate-100 shadow rounded p-1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    app-root {
+      @apply bg-gray-900 text-white;
+    }
+
+    .c3-card {
+      @apply bg-gray-700 shadow-gray-700;
+    }
+
+    .c3-dropdown {
+      @apply bg-gray-800 shadow-gray-100;
+    }
+
+    .c3-toolbar {
+      @apply bg-gray-800;
+    }
+
+    .c3-footer {
+      @apply bg-slate-800;
+    }
+
+    input {
+      @apply bg-slate-700;
+    }
   }
 }

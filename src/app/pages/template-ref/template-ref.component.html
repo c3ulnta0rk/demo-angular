@@ -1,0 +1,15 @@
+<c3-card>
+  <button (click)="toggle()">
+    @if(!target()?.length) {
+    <span> Afficher le template ref ici ? </span>
+    } @else {
+    <span> Retirer le template ? </span>
+    }
+  </button>
+
+  <ng-template #targetContainer></ng-template>
+</c3-card>
+
+<ng-template #ref>
+  <div>Coucou esti d'ref</div>
+</ng-template>

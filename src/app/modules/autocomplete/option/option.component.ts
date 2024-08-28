@@ -13,10 +13,11 @@ export class C3OptionComponent {
     effect(
       () => {
         if (this.selected()) {
-          this.elementRef.nativeElement.scrollIntoView({
-            block: 'nearest',
-            inline: 'nearest',
-          });
+          if (this.elementRef.nativeElement.scrollIntoView)
+            this.elementRef.nativeElement.scrollIntoView({
+              block: 'nearest',
+              inline: 'nearest',
+            });
           this.elementRef.nativeElement.classList.add('selected');
         } else {
           this.elementRef.nativeElement.classList.remove('selected');
