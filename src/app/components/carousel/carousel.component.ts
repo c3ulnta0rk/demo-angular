@@ -2,11 +2,14 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  contentChildren,
   ContentChildren,
   ElementRef,
   EventEmitter,
+  output,
   Output,
   QueryList,
+  viewChild,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -32,27 +35,30 @@ import { C3OnDragDirective } from '../../directives/onDrag.directive';
   },
 })
 export class CarouselComponent {
-  @Output() c3OnScrollEnd = new EventEmitter<void>();
-  @ContentChildren(CarouselItemDirective, { descendants: true })
-  carouselItems: QueryList<CarouselItemDirective>;
-
-  @ViewChild('scroller', { static: true }) scroller: ElementRef;
+  public c3OnScrollEnd = output<void>();
+  public carouselItems = contentChildren(CarouselItemDirective, {
+    descendants: true,
+  });
+  public scroller = viewChild('scroller', {
+    read: ElementRef,
+  });
+  private animationId: number | null = null;
 
   scrollItems(direction: number): void {
-    const currentScrollPosition = this.scroller.nativeElement.scrollLeft;
+    const currentScrollPosition = this.scroller().nativeElement.scrollLeft;
     const itemWidth =
-      this.carouselItems.first._elementRef.nativeElement.offsetWidth;
+      this.carouselItems().at(0)._elementRef.nativeElement.offsetWidth;
     let padding = 0;
     // Prendre en compte le padding uniquement si le scroll est à 0
     if (currentScrollPosition === 0 && window) {
       const scrollerStyle = window.getComputedStyle(
-        this.scroller.nativeElement,
+        this.scroller().nativeElement
       );
       padding = parseInt(scrollerStyle.paddingLeft, 10);
     }
     const newScrollPosition =
       currentScrollPosition + (itemWidth + padding) * direction;
-    this.scroller.nativeElement.scrollTo({
+    this.scroller().nativeElement.scrollTo({
       left: newScrollPosition,
       behavior: 'smooth',
     });
@@ -60,21 +66,33 @@ export class CarouselComponent {
   }
 
   onDrag(event: { deltaX: number; deltaY: number }): void {
-    const currentScrollPosition = this.scroller.nativeElement.scrollLeft;
-    const newScrollPosition = currentScrollPosition - event.deltaX;
-    this.scroller.nativeElement.scrollTo({
-      left: newScrollPosition,
-      behavior: 'auto',
+    if (this.animationId !== null) {
+      cancelAnimationFrame(this.animationId);
+    }
+
+    this.animationId = requestAnimationFrame(() => {
+      const currentScrollPosition = this.scroller().nativeElement.scrollLeft;
+      const newScrollPosition = currentScrollPosition - event.deltaX;
+      this.scroller().nativeElement.scrollTo({
+        left: newScrollPosition,
+        behavior: 'auto',
+      });
+      this.animationId = null;
     });
-    this.onScroll();
   }
 
   onScroll(): void {
-    const element = this.scroller.nativeElement;
+    const element = this.scroller().nativeElement;
     const isScrollingEnd =
       element.scrollLeft + element.clientWidth >= element.scrollWidth;
     if (isScrollingEnd) {
       this.c3OnScrollEnd.emit();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.animationId !== null) {
+      cancelAnimationFrame(this.animationId);
     }
   }
 }
