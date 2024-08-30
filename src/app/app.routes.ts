@@ -23,7 +23,6 @@ export const routes: Routes = [
       {
         path: 'home',
         component: HomePageComponent,
-
         data: {
           title: 'Home',
         },
@@ -31,30 +30,51 @@ export const routes: Routes = [
       {
         path: 'dd-example',
         component: DdExampleComponent,
+        data: {
+          title: 'Dropdown'
+        }
       },
       {
         path: 'encapsulation-example',
         component: EncapsulationExampleComponent,
+        data: {
+          title: 'Encapsulation'
+        }
       },
       {
         path: 'auto-scroll',
         component: AutoScrollComponent,
+        data: {
+          title: 'Autocomplete / AutoScroll'
+        }
       },
       {
         path: 'watch-sample',
         component: WatchSampleComponent,
+        data: {
+          title: 'C3 Watch'
+        }
       },
       {
         path: 'template-ref-sample',
         component: TemplateRefComponent,
+        data: {
+          title: 'Template Ref'
+        }
       },
       {
         path: 'animation-example',
         component: AnimationExampleComponent,
+        data: {
+          title: 'Animation (work in progress)'
+        }
       },
       {
         path: 'rotation-example',
         component: ExampleRotationComponent,
+        data: {
+          title: 'Rotation Text'
+        }
       },
       { path: '**', redirectTo: '/home' },
     ],

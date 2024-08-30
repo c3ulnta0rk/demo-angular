@@ -1,23 +1,86 @@
-:host {
+.layout-container {
   display: grid;
-  grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "header"
-    "main"
-    "footer";
+    "sidebar toolbar"
+    "sidebar main";
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr;
   height: 100vh;
-  margin: 0;
+  overflow: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
 
-  header {
-    grid-area: header;
+.sidebar {
+  grid-area: sidebar;
+  background-color: var(--sidebar-bg);
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 100vh;
+
+  nav {
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: 10px;
+        width: 100%;
+
+        a {
+          display: block;
+          text-decoration: none;
+          color: var(--text-color);
+          padding: 10px;
+          background-color: var(--link-bg);
+          border-radius: 4px;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 5px var(--shadow-color);
+
+          &:hover {
+            background-color: var(--link-hover-bg);
+            box-shadow: 0 4px 8px var(--shadow-color);
+          }
+
+          &.active {
+            font-weight: bold;
+            background-color: var(--link-active-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+          }
+        }
+      }
+    }
+  }
+}
+
+.toolbar {
+  grid-area: toolbar;
+  background-color: var(--toolbar-bg);
+  padding: 10px;
+}
+
+.main-content {
+  grid-area: main;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Pour assurer la compatibilité avec les navigateurs plus anciens */
+@supports not (display: grid) {
+  .layout-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
 
-  main {
-    grid-area: main;
-    overflow: auto;
+  .sidebar {
+    width: 250px;
+    flex-shrink: 0;
   }
 
-  footer {
-    grid-area: footer;
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
   }
 }

@@ -1,0 +1,28 @@
+:root {
+  // Couleurs du thème clair (par défaut)
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --primary-color: #1976d2;
+  --accent-color: #ffd740;
+  --sidebar-bg: #f5f5f5;
+  --toolbar-bg: #e0e0e0;
+  --link-bg: #ffffff;
+  --link-hover-bg: #e3f2fd;
+  --link-active-bg: #bbdefb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --primary-color: #90caf9;
+    --accent-color: #ffd740;
+    --sidebar-bg: #1e1e1e;
+    --toolbar-bg: #2c2c2c;
+    --link-bg: #333333;
+    --link-hover-bg: #4a4a4a;
+    --link-active-bg: #616161;
+    --shadow-color: rgba(255, 255, 255, 0.1);
+  }
+}

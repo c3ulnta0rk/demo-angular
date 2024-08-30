@@ -1,11 +1,23 @@
-<header>
-  <c3-toolbar>
-    <c3-navbar />
+<div class="layout-container">
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        @for (route of childRoutes(); track route.path) {
+          <li>
+            <a [routerLink]="[route.path]" routerLinkActive="active">
+              {{ route.data?.['title'] || route.path }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  </aside>
+
+  <c3-toolbar class="toolbar">
+    {{activePageTitle()}}
   </c3-toolbar>
-</header>
 
-<main>
-  <router-outlet></router-outlet>
-</main>
-
-<footer class="c3-footer">footer</footer>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

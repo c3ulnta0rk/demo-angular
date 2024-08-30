@@ -1,5 +1,6 @@
 @use "./btn" as *;
 @use "./scrollbar" as *;
+@import "./colors";
 
 @mixin core() {
   @include btn-base();
