@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  position: relative;
+  height: 1.5em;
+  overflow: hidden;
+}
+
+.rotator-item {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.5s ease;
+}
+
+.rotator-item.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.rotator-item.prev {
+  opacity: 0;
+  transform: translateY(-100%);
+}

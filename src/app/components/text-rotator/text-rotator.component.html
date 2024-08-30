@@ -1,0 +1,9 @@
+@for (text of textList(); track text) {
+  <p
+    class="rotator-item"
+    [class.active]="text === currentText()"
+    [class.prev]="text === prevText()"
+  >
+    {{ text }}
+  </p>
+}

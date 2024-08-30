@@ -8,6 +8,7 @@ import { AutoScrollComponent } from './pages/auto-scroll/auto-scroll.component';
 import { WatchSampleComponent } from './pages/watch-sample/watch-sample.component';
 import { TemplateRefComponent } from './pages/template-ref/template-ref.component';
 import { AnimationExampleComponent } from './pages/animation-example/animation-example.component';
+import { ExampleRotationComponent } from './pages/example-rotation/example-rotation.component';
 
 export const routes: Routes = [
   // {
@@ -22,6 +23,10 @@ export const routes: Routes = [
       {
         path: 'home',
         component: HomePageComponent,
+
+        data: {
+          title: 'Home',
+        },
       },
       {
         path: 'dd-example',
@@ -46,6 +51,10 @@ export const routes: Routes = [
       {
         path: 'animation-example',
         component: AnimationExampleComponent,
+      },
+      {
+        path: 'rotation-example',
+        component: ExampleRotationComponent,
       },
       { path: '**', redirectTo: '/home' },
     ],
