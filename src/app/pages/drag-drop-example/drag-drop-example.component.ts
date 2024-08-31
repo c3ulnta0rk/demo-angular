@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   QueryList,
   ViewChildren,
+  Renderer2,
 } from '@angular/core';
 
 @Component({
@@ -15,6 +16,12 @@ import {
 export class DragDropExampleComponent implements AfterViewInit {
   @ViewChild('draggable') draggable: ElementRef;
   @ViewChildren('dropTarget') dropTargets: QueryList<ElementRef>;
+  @ViewChild('container') container: ElementRef;
+
+  private placeholder: HTMLElement;
+  private animationFrameId: number;
+
+  constructor(private renderer: Renderer2) {}
 
   ngAfterViewInit() {
     this.initDragAndDrop();
@@ -32,6 +39,7 @@ export class DragDropExampleComponent implements AfterViewInit {
       startX = e.clientX - draggable.getBoundingClientRect().left;
       startY = e.clientY - draggable.getBoundingClientRect().top;
       draggable.style.position = 'absolute';
+      this.createPlaceholder(draggable);
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
     });
@@ -53,9 +61,11 @@ export class DragDropExampleComponent implements AfterViewInit {
         }
         dropTarget.classList.add('active');
         currentDropTarget = dropTarget;
+        this.movePlaceholderToDropTarget(dropTarget);
       } else if (currentDropTarget) {
         currentDropTarget.classList.remove('active');
         currentDropTarget = null;
+        this.resetPlaceholder();
       }
     };
 
@@ -67,6 +77,8 @@ export class DragDropExampleComponent implements AfterViewInit {
         currentDropTarget.classList.remove('active');
         // Ici, vous pouvez ajouter la logique pour "déposer" l'élément
       }
+      this.removePlaceholder();
+      draggable.style.position = 'static';
     };
   }
 
@@ -97,5 +109,83 @@ export class DragDropExampleComponent implements AfterViewInit {
 
   pointDistance(x1: number, y1: number, x2: number, y2: number): number {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  }
+
+  createPlaceholder(draggable: HTMLElement) {
+    this.placeholder = this.renderer.createElement('div');
+    this.renderer.addClass(this.placeholder, 'placeholder');
+    const { width, height } = draggable.getBoundingClientRect();
+    this.renderer.setStyle(this.placeholder, 'width', `${width}px`);
+    this.renderer.setStyle(this.placeholder, 'height', `${height}px`);
+    this.renderer.insertBefore(
+      draggable.parentNode,
+      this.placeholder,
+      draggable
+    );
+  }
+
+  movePlaceholderToDropTarget(dropTarget: HTMLElement) {
+    const targetRect = dropTarget.getBoundingClientRect();
+    const placeholderRect = this.placeholder.getBoundingClientRect();
+
+    const targetX =
+      targetRect.left + (targetRect.width - placeholderRect.width) / 2;
+    const targetY =
+      targetRect.top + (targetRect.height - placeholderRect.height) / 2;
+
+    this.animatePlaceholder(targetX, targetY);
+  }
+
+  animatePlaceholder(targetX: number, targetY: number) {
+    const { x, y } = this.placeholder.getBoundingClientRect();
+    const startX = parseFloat(this.placeholder.style.left) || x;
+    const startY = parseFloat(this.placeholder.style.top) || y;
+    const startTime = performance.now();
+    const duration = 300; // Durée de l'animation en millisecondes
+
+    const animate = (currentTime: number) => {
+      const elapsedTime = currentTime - startTime;
+      const progress = Math.min(elapsedTime / duration, 1);
+      const easeProgress = this.easeOutCubic(progress);
+
+      const currentX = startX + (targetX - startX) * easeProgress;
+      const currentY = startY + (targetY - startY) * easeProgress;
+
+      this.renderer.setStyle(this.placeholder, 'left', `${currentX}px`);
+      this.renderer.setStyle(this.placeholder, 'top', `${currentY}px`);
+
+      if (progress < 1) {
+        this.animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    this.animationFrameId = requestAnimationFrame(animate);
+  }
+
+  easeOutCubic(t: number): number {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  resetPlaceholder() {
+    // Annuler l'animation en cours si elle existe
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+
+    const initialPosition =
+      this.draggable.nativeElement.getBoundingClientRect();
+    this.animatePlaceholder(initialPosition.left, initialPosition.top);
+  }
+
+  removePlaceholder() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    if (this.placeholder && this.placeholder.parentNode) {
+      this.renderer.removeChild(this.placeholder.parentNode, this.placeholder);
+    }
   }
 }

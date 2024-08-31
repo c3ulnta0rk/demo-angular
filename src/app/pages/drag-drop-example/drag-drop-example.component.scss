@@ -1,6 +1,10 @@
 .container {
   padding: 20px;
   user-select: none;
+  .draggable-container {
+    min-width: 100px;
+    min-height: 100px;
+  }
 }
 
 .draggable {
@@ -12,24 +16,44 @@
   justify-content: center;
   align-items: center;
   cursor: move;
+  border-radius: 8px;
 }
 
 .drop-zone {
-  margin-top: 20px;
+  margin-top: 40px;
   display: flex;
   justify-content: space-around;
+}
+
+.drop-target-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.drop-target-label {
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
 .drop-target {
   width: 150px;
   height: 150px;
   border: 2px dashed #2ecc71;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+
+  &.active {
+    background-color: rgba(46, 204, 113, 0.2);
+  }
 }
 
-.drop-target.active {
-  background-color: #2ecc71;
-  color: white;
+.placeholder {
+  position: absolute;
+  background-color: rgba(52, 152, 219, 0.5);
+  border: 2px dashed #3498db;
+  border-radius: 8px;
+  margin: 4px;
+  z-index: 10;
+  pointer-events: none;
 }

@@ -1,8 +1,19 @@
-<div class="container">
-  <div #draggable class="draggable">Drag me</div>
+<div #container class="container">
+  <div class="draggable-container">
+    <div #draggable class="draggable">Drag me</div>
+  </div>
   <div class="drop-zone">
-    <div #dropTarget class="drop-target">Drop here 1</div>
-    <div #dropTarget class="drop-target">Drop here 2</div>
-    <div #dropTarget class="drop-target">Drop here 3</div>
+    <div class="drop-target-container">
+      <div class="drop-target-label">Drop here 1</div>
+      <div #dropTarget class="drop-target"></div>
+    </div>
+    <div class="drop-target-container">
+      <div class="drop-target-label">Drop here 2</div>
+      <div #dropTarget class="drop-target"></div>
+    </div>
+    <div class="drop-target-container">
+      <div class="drop-target-label">Drop here 3</div>
+      <div #dropTarget class="drop-target"></div>
+    </div>
   </div>
 </div>
