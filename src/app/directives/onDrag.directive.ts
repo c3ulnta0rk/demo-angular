@@ -8,6 +8,7 @@ import {
   Output,
   PLATFORM_ID,
   inject,
+  output,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subscription, fromEvent, map } from 'rxjs';
@@ -17,9 +18,12 @@ import { Subscription, fromEvent, map } from 'rxjs';
   standalone: true,
 })
 export class C3OnDragDirective {
-  @Output() c3OnDrag = new EventEmitter<{ deltaX: number; deltaY: number }>();
-  @Output() onDragStart = new EventEmitter<void>();
-  @Output() onDragEnd = new EventEmitter<void>();
+  public readonly c3OnDrag = output<{
+    deltaX: number;
+    deltaY: number;
+  }>();
+  public readonly c3OnDragStart = output<MouseEvent | TouchEvent>();
+  public readonly c3OnDragEnd = output<MouseEvent | TouchEvent>();
 
   private _destroyRef = inject(DestroyRef);
   private isDragging = false;
@@ -29,7 +33,7 @@ export class C3OnDragDirective {
 
   constructor(
     private elementRef: ElementRef,
-    @Inject(PLATFORM_ID) private _platformId: Object,
+    @Inject(PLATFORM_ID) private _platformId: Object
   ) {
     if (isPlatformServer(this._platformId)) return;
 
@@ -44,7 +48,7 @@ export class C3OnDragDirective {
   private registerEvent(
     eventName: string,
     eventHandler: (event: MouseEvent | TouchEvent) => void = () => {},
-    element: HTMLElement | Window = this.elementRef.nativeElement,
+    element: HTMLElement | Window = this.elementRef.nativeElement
   ) {
     return fromEvent<MouseEvent | TouchEvent>(element, eventName, {
       capture: true,
@@ -52,13 +56,13 @@ export class C3OnDragDirective {
     })
       .pipe(
         takeUntilDestroyed(this._destroyRef),
-        map((event) => this.preventDefault(event)),
+        map((event) => this.preventDefault(event))
       )
       .subscribe(eventHandler);
   }
 
   private preventDefault(
-    event: MouseEvent | TouchEvent,
+    event: MouseEvent | TouchEvent
   ): MouseEvent | TouchEvent {
     event.preventDefault();
     event.stopPropagation();
@@ -69,19 +73,20 @@ export class C3OnDragDirective {
     this.preventClickSubscription = this.registerEvent(
       'click',
       console.log,
-      window,
+      window
     );
     this.isDragging = true;
     this.lastX =
       event instanceof MouseEvent ? event.clientX : event.touches[0].clientX;
     this.lastY =
       event instanceof MouseEvent ? event.clientY : event.touches[0].clientY;
+    this.c3OnDragStart.emit(event);
   }
 
   private endDrag(event: MouseEvent | TouchEvent): void {
     this.isDragging = false;
     this.preventClickSubscription?.unsubscribe();
-    this.onDragEnd.emit();
+    this.c3OnDragEnd.emit(event);
   }
 
   private drag(event: MouseEvent | TouchEvent): void {

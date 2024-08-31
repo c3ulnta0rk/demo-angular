@@ -3,14 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   contentChildren,
-  ContentChildren,
   ElementRef,
-  EventEmitter,
   output,
-  Output,
-  QueryList,
   viewChild,
-  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { CarouselItemDirective } from './carousel-item.directive';
@@ -42,7 +37,11 @@ export class CarouselComponent {
   public scroller = viewChild('scroller', {
     read: ElementRef,
   });
+
   private animationId: number | null = null;
+  private isScrolling: boolean = false;
+  private accumulatedDeltaX: number = 0;
+  private initialScrollPosition: number = 0;
 
   scrollItems(direction: number): void {
     const currentScrollPosition = this.scroller().nativeElement.scrollLeft;
@@ -62,31 +61,48 @@ export class CarouselComponent {
       left: newScrollPosition,
       behavior: 'smooth',
     });
-    this.onScroll();
+    this.updateScrollPosition();
+  }
+
+  onDragStart(): void {
+    this.isScrolling = true;
+    this.initialScrollPosition = this.scroller().nativeElement.scrollLeft;
+    this.accumulatedDeltaX = 0;
   }
 
   onDrag(event: { deltaX: number; deltaY: number }): void {
-    if (this.animationId !== null) {
-      cancelAnimationFrame(this.animationId);
-    }
+    if (!this.isScrolling) return;
 
-    this.animationId = requestAnimationFrame(() => {
-      const currentScrollPosition = this.scroller().nativeElement.scrollLeft;
-      const newScrollPosition = currentScrollPosition - event.deltaX;
-      this.scroller().nativeElement.scrollTo({
-        left: newScrollPosition,
-        behavior: 'auto',
-      });
-      this.animationId = null;
-    });
+    this.accumulatedDeltaX += event.deltaX;
+
+    if (this.animationId === null) {
+      this.animationId = requestAnimationFrame(() =>
+        this.updateScrollPosition()
+      );
+    }
   }
 
-  onScroll(): void {
-    const element = this.scroller().nativeElement;
-    const isScrollingEnd =
-      element.scrollLeft + element.clientWidth >= element.scrollWidth;
-    if (isScrollingEnd) {
-      this.c3OnScrollEnd.emit();
+  onDragEnd(): void {
+    this.isScrolling = false;
+    // Ici, vous pourriez ajouter une logique pour l'inertie si nécessaire
+  }
+
+  private updateScrollPosition(): void {
+    if (!this.isScrolling) {
+      this.animationId = null;
+      return;
+    }
+
+    const newScrollPosition =
+      this.initialScrollPosition - this.accumulatedDeltaX;
+    this.scroller().nativeElement.scrollLeft = newScrollPosition;
+
+    this.animationId = null;
+
+    if (this.accumulatedDeltaX !== 0) {
+      this.animationId = requestAnimationFrame(() =>
+        this.updateScrollPosition()
+      );
     }
   }
 

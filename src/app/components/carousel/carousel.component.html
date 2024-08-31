@@ -4,7 +4,14 @@
 >
   <
 </button>
-<div #scroller class="scroller" c3AttachScroll (c3OnDrag)="onDrag($event)">
+<div 
+  #scroller 
+  class="scroller" 
+  c3AttachScroll 
+  (c3OnDrag)="onDrag($event)" 
+  (c3OnDragEnd)="onDragEnd()" 
+  (c3OnDragStart)="onDragStart()"
+>
   <ng-content></ng-content>
 </div>
 <button
