@@ -9,6 +9,7 @@ import { WatchSampleComponent } from './pages/watch-sample/watch-sample.componen
 import { TemplateRefComponent } from './pages/template-ref/template-ref.component';
 import { AnimationExampleComponent } from './pages/animation-example/animation-example.component';
 import { ExampleRotationComponent } from './pages/example-rotation/example-rotation.component';
+import { DragDropExampleComponent } from './pages/drag-drop-example/drag-drop-example.component';
 
 export const routes: Routes = [
   // {
@@ -31,50 +32,57 @@ export const routes: Routes = [
         path: 'dd-example',
         component: DdExampleComponent,
         data: {
-          title: 'Dropdown'
-        }
+          title: 'Dropdown',
+        },
       },
       {
         path: 'encapsulation-example',
         component: EncapsulationExampleComponent,
         data: {
-          title: 'Encapsulation'
-        }
+          title: 'Encapsulation',
+        },
       },
       {
         path: 'auto-scroll',
         component: AutoScrollComponent,
         data: {
-          title: 'Autocomplete / AutoScroll'
-        }
+          title: 'Autocomplete / AutoScroll',
+        },
       },
       {
         path: 'watch-sample',
         component: WatchSampleComponent,
         data: {
-          title: 'C3 Watch'
-        }
+          title: 'C3 Watch',
+        },
       },
       {
         path: 'template-ref-sample',
         component: TemplateRefComponent,
         data: {
-          title: 'Template Ref'
-        }
+          title: 'Template Ref',
+        },
       },
       {
         path: 'animation-example',
         component: AnimationExampleComponent,
         data: {
-          title: 'Animation (work in progress)'
-        }
+          title: 'Animation (work in progress)',
+        },
       },
       {
         path: 'rotation-example',
         component: ExampleRotationComponent,
         data: {
-          title: 'Rotation Text'
-        }
+          title: 'Rotation Text',
+        },
+      },
+      {
+        path: 'drag-and-drop',
+        component: DragDropExampleComponent,
+        data: {
+          title: 'Drag Drop w Inertia',
+        },
       },
       { path: '**', redirectTo: '/home' },
     ],
