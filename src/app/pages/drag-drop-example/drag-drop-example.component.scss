@@ -45,7 +45,7 @@
   }
 }
 
-:host ::ng-deep .placeholder {
+::ng-deep .placeholder {
   position: fixed;
   background-color: rgba(52, 152, 219, 0.5);
   border: 2px dashed #3498db;

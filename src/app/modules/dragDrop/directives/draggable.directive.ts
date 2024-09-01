@@ -38,6 +38,18 @@ export class DraggableDirective {
     this.createPlaceholder();
   }
 
+  private createPlaceholder() {
+    const placeholder = document.createElement('div');
+    placeholder.classList.add('placeholder');
+    placeholder.style.width = `${this.element.offsetWidth}px`;
+    placeholder.style.height = `${this.element.offsetHeight}px`;
+    const rect = this.element.getBoundingClientRect();
+    placeholder.style.left = `${rect.left}px`;
+    placeholder.style.top = `${rect.top}px`;
+    document.body.appendChild(placeholder);
+    this.dragDropService.setPlaceholder(placeholder);
+  }
+
   private onMouseMove = (event: MouseEvent) => {
     const x = event.clientX - this.startX;
     const y = event.clientY - this.startY;
@@ -65,18 +77,6 @@ export class DraggableDirective {
     this.element.style.top = '';
     this.removePlaceholder();
   };
-
-  private createPlaceholder() {
-    const placeholder = document.createElement('div');
-    placeholder.classList.add('placeholder');
-    placeholder.style.width = `${this.element.offsetWidth}px`;
-    placeholder.style.height = `${this.element.offsetHeight}px`;
-    const rect = this.element.getBoundingClientRect();
-    placeholder.style.left = `${rect.left}px`;
-    placeholder.style.top = `${rect.top}px`;
-    document.body.appendChild(placeholder);
-    this.dragDropService.setPlaceholder(placeholder);
-  }
 
   private movePlaceholderToDropTarget(dropTarget: HTMLElement) {
     const placeholder = this.dragDropService.getPlaceholder();
