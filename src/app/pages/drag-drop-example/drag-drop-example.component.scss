@@ -1,13 +1,10 @@
-.container {
-  padding: 20px;
-  user-select: none;
-  .draggable-container {
-    min-width: 100px;
-    min-height: 100px;
-  }
+.draggable-container {
+  min-width: 100px;
+  min-height: 100px;
+  display: inline-block;
 }
 
-.draggable {
+[draggable] {
   width: 100px;
   height: 100px;
   background-color: #3498db;
@@ -48,8 +45,8 @@
   }
 }
 
-.placeholder {
-  position: absolute;
+:host ::ng-deep .placeholder {
+  position: fixed;
   background-color: rgba(52, 152, 219, 0.5);
   border: 2px dashed #3498db;
   border-radius: 8px;
