@@ -1,0 +1,13 @@
+<aside class="menu">
+  @for(menu of c3MenuCoulant(); track menu; let i = $index) {
+    <button (click)="selectMenu(i)" [class.active]="i === selectedIndex()">
+      <ng-container *ngTemplateOutlet="menu.menuTpl()"></ng-container>
+    </button>
+  }
+</aside>
+
+<section class="contenu" [style]="{
+  'border-top-left-radius': selectedIndex() === 0 ? '0' : '1rem',
+}">
+  <ng-container #targetContent></ng-container>
+</section>

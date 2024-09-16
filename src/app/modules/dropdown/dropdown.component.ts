@@ -20,9 +20,7 @@ import {
   fromEvent,
   interval,
   map,
-  Observable,
   skipUntil,
-  Subject,
   Subscription,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

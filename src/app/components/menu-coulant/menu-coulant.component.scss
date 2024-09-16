@@ -1,0 +1,51 @@
+.c3-menu-coulant {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "menu contenu";
+  height: 100%;
+
+  .menu {
+    grid-area: menu;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    > * {
+      margin: 0;
+      padding: 10px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      min-width: 100px;
+      box-shadow: none;
+      border-radius: 0;
+      border-top-left-radius: 1rem;
+      border-bottom-left-radius: 1rem;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #e0e0e0;
+      }
+
+      &.active {
+        background-color: #e0e0e0;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+      }
+    }
+  }
+
+  .contenu {
+    grid-area: contenu;
+    padding: 0 10px;
+    height: 100%;
+    overflow: auto;
+    background-color: #e0e0e0;
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    transition: all 0.2s;
+  }
+}

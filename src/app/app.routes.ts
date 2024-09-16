@@ -10,6 +10,7 @@ import { TemplateRefComponent } from './pages/template-ref/template-ref.componen
 import { AnimationExampleComponent } from './pages/animation-example/animation-example.component';
 import { ExampleRotationComponent } from './pages/example-rotation/example-rotation.component';
 import { DragDropExampleComponent } from './pages/drag-drop-example/drag-drop-example.component';
+import { MenuCoulantPage } from './pages/menu-coulant/menu-coulant.component';
 
 export const routes: Routes = [
   // {
@@ -82,6 +83,13 @@ export const routes: Routes = [
         component: DragDropExampleComponent,
         data: {
           title: 'Drag Drop w Inertia',
+        },
+      },
+      {
+        path: 'menu-coulant',
+        component: MenuCoulantPage,
+        data: {
+          title: 'Menu Coulant',
         },
       },
       { path: '**', redirectTo: '/home' },
