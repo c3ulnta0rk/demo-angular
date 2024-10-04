@@ -2,8 +2,8 @@
 @tailwind utilities;
 
 @mixin btn-base() {
-  button,
-  a {
+  button:not([class="no-style"]),
+  a:not([class="no-style"]) {
     @apply bg-blue-700 text-white font-bold py-2 px-4 rounded shadow shadow-blue-700 text-[15px] active:scale-95;
   }
 

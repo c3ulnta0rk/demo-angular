@@ -11,6 +11,7 @@ import { AnimationExampleComponent } from './pages/animation-example/animation-e
 import { ExampleRotationComponent } from './pages/example-rotation/example-rotation.component';
 import { DragDropExampleComponent } from './pages/drag-drop-example/drag-drop-example.component';
 import { MenuCoulantPage } from './pages/menu-coulant/menu-coulant.component';
+import { ButtonUnderlineComponent } from './pages/button-underline/button-underline.component';
 
 export const routes: Routes = [
   // {
@@ -90,6 +91,13 @@ export const routes: Routes = [
         component: MenuCoulantPage,
         data: {
           title: 'Menu Coulant',
+        },
+      },
+      {
+        path: 'button-underline',
+        component: ButtonUnderlineComponent,
+        data: {
+          title: 'Bouton underline',
         },
       },
       { path: '**', redirectTo: '/home' },
