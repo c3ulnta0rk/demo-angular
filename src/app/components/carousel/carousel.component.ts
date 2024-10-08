@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  contentChild,
   contentChildren,
   ElementRef,
   output,
