@@ -12,6 +12,7 @@ import { ExampleRotationComponent } from './pages/example-rotation/example-rotat
 import { DragDropExampleComponent } from './pages/drag-drop-example/drag-drop-example.component';
 import { MenuCoulantPage } from './pages/menu-coulant/menu-coulant.component';
 import { ButtonUnderlineComponent } from './pages/button-underline/button-underline.component';
+import { TooltipComponent } from './pages/tooltip/tooltip.component';
 
 export const routes: Routes = [
   // {
@@ -98,6 +99,13 @@ export const routes: Routes = [
         component: ButtonUnderlineComponent,
         data: {
           title: 'Bouton underline',
+        },
+      },
+      {
+        path: 'tooltip',
+        component: TooltipComponent,
+        data: {
+          title: 'Tooltip sample',
         },
       },
       { path: '**', redirectTo: '/home' },
