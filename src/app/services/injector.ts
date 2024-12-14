@@ -8,6 +8,7 @@ import {
   createComponent,
   PLATFORM_ID,
   Inject,
+  Renderer2,
 } from '@angular/core';
 
 @Injectable({
@@ -15,16 +16,17 @@ import {
 })
 export class C3InjectorService {
   private readonly applicationRef = inject(ApplicationRef);
+  private readonly renderer = inject(Renderer2);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
   public injectComponent<T>(component: Type<T>): ComponentRef<T> | void {
     if (isPlatformServer(this.platformId)) return;
 
-    const container = document.createElement('div');
+    const container = this.renderer.createElement('div');
 
     container.classList.add('injected-component');
-    document.body.appendChild(container);
+    this.renderer.appendChild(document.body, container);
 
     const componentRef = createComponent(component, {
       environmentInjector: this.applicationRef.injector,
