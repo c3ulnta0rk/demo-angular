@@ -8,12 +8,13 @@ import {
 import { C3AutocompleteComponent } from '../container/autocomplete.component';
 
 @Directive({
-  selector: 'input[c3Autocomplete], textarea[c3Autocomplete]',
-  host: {
-    '(focus)': 'c3Autocomplete().open()',
-    '(blur)': 'c3Autocomplete().close()',
-    '(keydown)': 'c3Autocomplete().keydown($event)',
-  },
+    selector: 'input[c3Autocomplete], textarea[c3Autocomplete]',
+    host: {
+        '(focus)': 'c3Autocomplete().open()',
+        '(blur)': 'c3Autocomplete().close()',
+        '(keydown)': 'c3Autocomplete().keydown($event)',
+    },
+    standalone: false
 })
 export class C3AutocompleteDirective implements AfterViewInit {
   public readonly c3Autocomplete = input<C3AutocompleteComponent>();

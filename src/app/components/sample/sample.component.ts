@@ -3,11 +3,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { C3OnClickOutsideDirective } from '../../modules/onClickOutside/onClickOutside.directive';
 
 @Component({
-  selector: 'c3-sample',
-  standalone: true,
-  imports: [CommonModule, C3OnClickOutsideDirective],
-  templateUrl: './sample.component.html',
-  styleUrl: './sample.component.scss',
+    selector: 'c3-sample',
+    imports: [CommonModule, C3OnClickOutsideDirective],
+    templateUrl: './sample.component.html',
+    styleUrl: './sample.component.scss'
 })
 export class SampleComponent {
   @Input() public txt: string = 'Sample Component';

@@ -10,14 +10,15 @@ import {
 import { C3MenuCoulantMenu } from './menu-coulant-menu/menu-coulant-menu.component';
 
 @Component({
-  selector: 'c3-menu-coulant',
-  templateUrl: './menu-coulant.component.html',
-  styleUrl: './menu-coulant.component.scss',
-  encapsulation: ViewEncapsulation.None,
-  host: {
-    class: 'c3-menu-coulant',
-    ngSkipHydration: 'true',
-  },
+    selector: 'c3-menu-coulant',
+    templateUrl: './menu-coulant.component.html',
+    styleUrl: './menu-coulant.component.scss',
+    encapsulation: ViewEncapsulation.None,
+    host: {
+        class: 'c3-menu-coulant',
+        ngSkipHydration: 'true',
+    },
+    standalone: false
 })
 export class MenuCoulantComponent {
   public readonly c3MenuCoulant = contentChildren(C3MenuCoulantMenu);

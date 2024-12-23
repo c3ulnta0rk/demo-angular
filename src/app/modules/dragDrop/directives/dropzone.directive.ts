@@ -8,7 +8,8 @@ import {
 import { DragDropService } from '../drag-drop.service';
 
 @Directive({
-  selector: '[dropzone]',
+    selector: '[dropzone]',
+    standalone: false
 })
 export class DropzoneDirective implements OnInit, OnDestroy {
   private element = inject(ElementRef<HTMLElement>).nativeElement;

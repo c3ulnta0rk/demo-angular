@@ -13,27 +13,23 @@ import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
 import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
-import { AttachScrollDirective } from '../../modules/scrollDispatcher/attachScroll.directive';
-import { filter, fromEvent } from 'rxjs';
 import { SampleComponent } from '../../components/sample/sample.component';
 import { C3DropdownService } from '../../modules/dropdown/dropdown.service';
 import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
 import { C3DropdownComponent } from '../../modules/dropdown/dropdown.component';
 
 @Component({
-  selector: 'c3-dd-example',
-  standalone: true,
-  imports: [
-    AttachScrollDirective,
-    C3CardComponent,
-    C3DropdownModule,
-    C3OnScrollEndDirective,
-    CarouselComponent,
-    CarouselItemDirective,
-    CommonModule,
-  ],
-  templateUrl: './dd-example.component.html',
-  styleUrl: './dd-example.component.scss',
+    selector: 'c3-dd-example',
+    imports: [
+        C3CardComponent,
+        C3DropdownModule,
+        C3OnScrollEndDirective,
+        CarouselComponent,
+        CarouselItemDirective,
+        CommonModule,
+    ],
+    templateUrl: './dd-example.component.html',
+    styleUrl: './dd-example.component.scss'
 })
 export class DdExampleComponent {
   private readonly _dropdown = inject(C3DropdownService);

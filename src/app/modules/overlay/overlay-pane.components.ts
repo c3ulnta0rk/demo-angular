@@ -6,10 +6,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'c3-overlay-pane',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'c3-overlay-pane',
+    imports: [CommonModule, RouterModule],
+    template: `
     @if (hasBackdrop()){
       <div
         class="overlay-backdrop"
@@ -20,7 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     
     <div class="overlay-content" #overlayContent [ngStyle]="contentStyles()"></div>
   `,
-  styles: [`
+    styles: [`
     :host {
       /* L’hôte est en position absolue (ou fixed) dans le container overlay principal */
       position: absolute;

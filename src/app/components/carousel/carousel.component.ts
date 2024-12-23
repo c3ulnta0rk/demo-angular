@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  contentChild,
   contentChildren,
   ElementRef,
   output,
@@ -14,21 +13,19 @@ import { AttachScrollDirective } from '../../modules/scrollDispatcher/attachScro
 import { C3OnDragDirective } from '../../directives/onDrag.directive';
 
 @Component({
-  selector: 'c3-carousel',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CarouselItemDirective,
-    AttachScrollDirective,
-    C3OnDragDirective,
-  ],
-  templateUrl: './carousel.component.html',
-  styleUrl: './carousel.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-  host: {
-    class: 'c3-carousel',
-  },
+    selector: 'c3-carousel',
+    imports: [
+        CommonModule,
+        AttachScrollDirective,
+        C3OnDragDirective,
+    ],
+    templateUrl: './carousel.component.html',
+    styleUrl: './carousel.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    host: {
+        class: 'c3-carousel',
+    }
 })
 export class CarouselComponent {
   public c3OnScrollEnd = output<void>();

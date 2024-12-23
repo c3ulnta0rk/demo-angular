@@ -14,9 +14,10 @@ import { C3DropdownComponent } from '../../dropdown/dropdown.component';
 import { c3Watch } from '../../../utils/watch';
 
 @Component({
-  selector: 'c3-autocomplete',
-  templateUrl: './autocomplete.component.html',
-  styleUrl: './autocomplete.component.scss',
+    selector: 'c3-autocomplete',
+    templateUrl: './autocomplete.component.html',
+    styleUrl: './autocomplete.component.scss',
+    standalone: false
 })
 export class C3AutocompleteComponent {
   public readonly templateRef = viewChild(TemplateRef);

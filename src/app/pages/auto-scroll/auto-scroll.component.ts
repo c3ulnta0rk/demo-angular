@@ -87,11 +87,10 @@ const countries = [
 ];
 
 @Component({
-  selector: 'c3-auto-scroll',
-  standalone: true,
-  imports: [CommonModule, C3AutocompleteModule],
-  templateUrl: './auto-scroll.component.html',
-  styleUrl: './auto-scroll.component.scss',
+    selector: 'c3-auto-scroll',
+    imports: [CommonModule, C3AutocompleteModule],
+    templateUrl: './auto-scroll.component.html',
+    styleUrl: './auto-scroll.component.scss'
 })
 export class AutoScrollComponent {
   public readonly items = signal(

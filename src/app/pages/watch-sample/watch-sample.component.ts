@@ -5,11 +5,10 @@ import { SnackbarService } from '../../modules/snackbar/snackbar.service';
 import { SnackbarModule } from '../../modules/snackbar/snackbar.module';
 
 @Component({
-  selector: 'c3-watch-sample',
-  standalone: true,
-  imports: [CommonModule, SnackbarModule],
-  templateUrl: './watch-sample.component.html',
-  styleUrl: './watch-sample.component.scss',
+    selector: 'c3-watch-sample',
+    imports: [CommonModule, SnackbarModule],
+    templateUrl: './watch-sample.component.html',
+    styleUrl: './watch-sample.component.scss'
 })
 export class WatchSampleComponent {
   public readonly counter = signal(0);

@@ -11,11 +11,10 @@ import {
 import { c3Watch } from '../../utils/watch';
 
 @Component({
-  selector: 'c3-snackbar',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './snackbar.component.html',
-  styleUrl: './snackbar.component.scss',
+    selector: 'c3-snackbar',
+    imports: [CommonModule],
+    templateUrl: './snackbar.component.html',
+    styleUrl: './snackbar.component.scss'
 })
 export class SnackbarComponent {
   public readonly message = input('Hello, Snackbar!');

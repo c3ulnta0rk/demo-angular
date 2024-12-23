@@ -1,9 +1,10 @@
 import { Component, effect, ElementRef, inject, signal } from '@angular/core';
 
 @Component({
-  selector: 'c3-option',
-  templateUrl: './option.component.html',
-  styleUrl: './option.component.scss',
+    selector: 'c3-option',
+    templateUrl: './option.component.html',
+    styleUrl: './option.component.scss',
+    standalone: false
 })
 export class C3OptionComponent {
   public readonly selected = signal(false);

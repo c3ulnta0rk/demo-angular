@@ -8,7 +8,8 @@ import {
 import { DragDropService } from '../drag-drop.service';
 
 @Directive({
-  selector: '[draggable]',
+    selector: '[draggable]',
+    standalone: false
 })
 export class DraggableDirective {
   private element = inject(ElementRef<HTMLElement>).nativeElement;

@@ -16,12 +16,11 @@ import { ToolbarComponent } from '../../components/toolbar/toolbar.component';
 import { Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
-  selector: 'c3-default-layout',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ToolbarComponent],
-  templateUrl: './default.layout.component.html',
-  styleUrl: './default.layout.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'c3-default-layout',
+    imports: [CommonModule, RouterModule, ToolbarComponent],
+    templateUrl: './default.layout.component.html',
+    styleUrl: './default.layout.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultLayoutComponent {
   private router = inject(Router);

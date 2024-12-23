@@ -8,11 +8,10 @@ import {
 import { C3CardComponent } from '../../components/card/card.component';
 
 @Component({
-  selector: 'c3-template-ref',
-  standalone: true,
-  imports: [CommonModule, C3CardComponent],
-  templateUrl: './template-ref.component.html',
-  styleUrl: './template-ref.component.scss',
+    selector: 'c3-template-ref',
+    imports: [CommonModule, C3CardComponent],
+    templateUrl: './template-ref.component.html',
+    styleUrl: './template-ref.component.scss'
 })
 export class TemplateRefComponent {
   private readonly ref = viewChild('ref', {

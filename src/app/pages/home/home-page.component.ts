@@ -1,17 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
-import { HeaderComponent } from '../../components/header/header.component';
 import expansionAnimation from '../animation-example/animations/expansion.animation';
 
 @Component({
-  selector: 'c3-home-page',
-  standalone: true,
-  imports: [CommonModule, C3CardComponent, HeaderComponent],
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [expansionAnimation],
+    selector: 'c3-home-page',
+    imports: [CommonModule, C3CardComponent],
+    templateUrl: './home-page.component.html',
+    styleUrl: './home-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [expansionAnimation]
 })
 export class HomePageComponent {
   public homeExpanded = false;

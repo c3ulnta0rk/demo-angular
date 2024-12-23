@@ -26,11 +26,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'c3-dropdown',
-  standalone: true,
-  imports: [],
-  templateUrl: './dropdown.component.html',
-  styleUrl: './dropdown.component.scss',
+    selector: 'c3-dropdown',
+    imports: [],
+    templateUrl: './dropdown.component.html',
+    styleUrl: './dropdown.component.scss'
 })
 export class C3DropdownComponent<T> {
   public readonly element = input<HTMLElement | undefined>();
