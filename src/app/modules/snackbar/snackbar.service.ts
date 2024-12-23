@@ -5,7 +5,7 @@ import {
   TemplateRef,
   Type,
 } from '@angular/core';
-import { C3InjectorService } from '../../services/injector';
+import { C3InjectorService } from '../overlays/services/injector';
 import { SnackbarComponent } from './snackbar.component';
 import { c3ApplyInputValues } from '../../utils/fill-inputs';
 
