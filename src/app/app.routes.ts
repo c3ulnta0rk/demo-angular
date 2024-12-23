@@ -13,6 +13,7 @@ import { DragDropExampleComponent } from './pages/drag-drop-example/drag-drop-ex
 import { MenuCoulantPage } from './pages/menu-coulant/menu-coulant.component';
 import { ButtonUnderlineComponent } from './pages/button-underline/button-underline.component';
 import { TooltipComponent } from './pages/tooltip/tooltip.component';
+import { OverlayExampleComponent } from './pages/overlay-example/overlay-example.component';
 
 export const routes: Routes = [
   // {
@@ -36,6 +37,12 @@ export const routes: Routes = [
         component: DdExampleComponent,
         data: {
           title: 'Dropdown',
+        },
+      },{
+        path: 'overlay-example',
+        component: OverlayExampleComponent,
+        data: {
+          title: 'Overlay',
         },
       },
       {
