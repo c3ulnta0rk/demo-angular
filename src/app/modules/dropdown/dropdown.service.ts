@@ -9,10 +9,10 @@ import {
   TemplateRef,
   Type,
 } from '@angular/core';
-import { C3InjectorService } from '../overlays/services/injector';
 import { c3ApplyInputValues } from '../../utils/fill-inputs';
 import { C3DropdownComponent } from './dropdown.component';
 import { Subject } from 'rxjs';
+import { C3InjectorService } from '../overlays/services/injector';
 
 export interface C3DropdownConfig<T = any> {
   element: HTMLElement;
