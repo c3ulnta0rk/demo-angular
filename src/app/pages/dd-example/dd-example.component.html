@@ -1,9 +1,20 @@
-<c3-carousel (c3OnScrollEnd)="onScrollEnd()">
-  @for (item of items; track item) {
-  <c3-card c3CarouselItem>
-    <p>coucou {{ item }}</p>
+<section>
+  <h4>Caroussel avec drag/drop et dropdown</h4>
+  <c3-carousel (c3OnScrollEnd)="onScrollEnd()">
+    @for (item of items; track item) {
+      <c3-card c3CarouselItem>
+        <p>coucou {{ item }}</p>
 
-    <button (click)="openDropdown($event, item)">Open dropdown</button>
-  </c3-card>
-  }
-</c3-carousel>
+        <button (click)="openDropdown($event, item)">Open dropdown</button>
+      </c3-card>
+    }
+  </c3-carousel>
+</section>
+
+<section>
+  <h4>Dropdown sur un button</h4>
+</section>
+
+<section>
+  <h4>Dropdown sur un input</h4>
+</section>

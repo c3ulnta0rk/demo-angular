@@ -1,9 +1,11 @@
 @use "./btn" as *;
 @use "./scrollbar" as *;
 @use "./colors" as *;
+@use "./typography" as *;
 
 @mixin core() {
   @include btn-base();
   @include scrollbar();
   @include colors();
+  @include typography();
 }

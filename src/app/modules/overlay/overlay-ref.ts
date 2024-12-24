@@ -9,7 +9,6 @@ import { C3InjectorService } from '../injector/injector.service';
  * Gère notamment la fermeture, l’instance du composant final, etc.
  */
 export class C3OverlayRef<T> {
-  
   /**
    * Événement émis après la fermeture de l’overlay.
    * On expose l’Observable publiquement, et on garde le Subject privé pour émettre.
@@ -18,13 +17,14 @@ export class C3OverlayRef<T> {
   public afterClosed$ = this._afterClosed.asObservable();
   private componentRef: ComponentRef<T>;
   private readonly _afterComponentRefMounted = new Subject<ComponentRef<T>>();
-  public afterComponentRefMounted$ = this._afterComponentRefMounted.asObservable();
+  public afterComponentRefMounted$ =
+    this._afterComponentRefMounted.asObservable();
 
   constructor(
     /** Référence du “pane” (ex. backdrop, position, etc.). */
     private readonly paneRef: ComponentRef<C3OverlayPaneComponent>,
     /** Service pour nettoyer le DOM (removeComponent). */
-    private readonly injectorService: C3InjectorService
+    private readonly injectorService: C3InjectorService,
   ) {
     this.paneRef.instance.requestClose.subscribe(() => this.close());
   }
@@ -48,7 +48,10 @@ export class C3OverlayRef<T> {
    */
   public close(): void {
     // 1) Retirer le composant final du DOM
-    this.injectorService.removeComponent(this.componentRef);
+    if (this.componentRef) {
+      this.injectorService.removeComponent(this.componentRef);
+      this.componentRef = null;
+    }
 
     // 2) Retirer le pane du DOM
     this.injectorService.removeComponent(this.paneRef);

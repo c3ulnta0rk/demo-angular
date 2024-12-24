@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { C3OverlayService } from '../../modules/overlay/overlay.service';
 import { MyDialogExampleComponent } from './my-dialog-example/my-dialog-example.component';
+import { map } from 'rxjs';
 
 @Component({
-    selector: 'c3-overlay-example',
-    imports: [],
-    templateUrl: './overlay-example.component.html',
-    styleUrl: './overlay-example.component.scss'
+  selector: 'c3-overlay-example',
+  imports: [],
+  templateUrl: './overlay-example.component.html',
+  styleUrl: './overlay-example.component.scss',
 })
 export class OverlayExampleComponent {
   private readonly overlayService = inject(C3OverlayService);
@@ -15,13 +16,15 @@ export class OverlayExampleComponent {
     const overlayRef = this.overlayService.open(MyDialogExampleComponent, {
       hasBackdrop: true,
       inputs: {
-        someInput: 'Hello world'
-      }
+        someInput: 'Hello world',
+      },
     });
 
-    overlayRef.afterComponentRefMounted$.subscribe(console.log)
-    
     // On peut gérer la fermeture
-    // overlayRef.close();
+    overlayRef.afterComponentRefMounted$
+      .pipe(map((componentRef) => componentRef.instance))
+      .subscribe(({ requestClose }) => {
+        requestClose.subscribe(() => overlayRef.close());
+      });
   }
- }
+}

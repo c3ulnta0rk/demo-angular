@@ -1,54 +1,70 @@
-import { Component, computed, DestroyRef, effect, ElementRef, inject, Injector, input, Input, output, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
 import { OverlayConfig } from './overlay-config';
 import { CommonModule } from '@angular/common';
 import { coerceCssValue } from '../../utils/coerceCssValue';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    selector: 'c3-overlay-pane',
-    imports: [CommonModule, RouterModule],
-    template: `
-    @if (hasBackdrop()){
+  selector: 'c3-overlay-pane',
+  imports: [CommonModule, RouterModule],
+  template: `
+    @if (hasBackdrop()) {
       <div
         class="overlay-backdrop"
         [ngClass]="backdropClass()"
-        (click)="onBackdropClick($event)">
-      </div>
+        (click)="onBackdropClick($event)"
+      ></div>
     }
-    
-    <div class="overlay-content" #overlayContent [ngStyle]="contentStyles()"></div>
+
+    <div
+      #overlayContent
+      [ngStyle]="contentStyles()"
+      (click)="$event.stopPropagation()"
+    ></div>
   `,
-    styles: [`
-    :host {
-      /* L’hôte est en position absolue (ou fixed) dans le container overlay principal */
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none; /* Permet de gérer l’empilement, 
+  styles: [
+    `
+      :host {
+        /* L’hôte est en position absolue (ou fixed) dans le container overlay principal */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Permet de gérer l’empilement, 
                                on va activer pointer-events seulement sur le backdrop ou le contenu */
-    }
+      }
 
-    .overlay-backdrop {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: auto; /* On veut capter le clic */
-    }
-
-    .overlay-content {
-      pointer-events: auto; /* autorise l'interaction avec le contenu */
-    }
-  `]
+      .overlay-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: auto; /* On veut capter le clic */
+      }
+    `,
+  ],
 })
 export class C3OverlayPaneComponent {
-  public readonly hasBackdrop = input<OverlayConfig['hasBackdrop']>(false); 
+  public readonly hasBackdrop = input<OverlayConfig['hasBackdrop']>(false);
   public readonly backdropClass = input<OverlayConfig['backdropClass']>('');
   public readonly position = input<OverlayConfig['position']>('center');
-  public readonly closeOnOutsideClick = input<OverlayConfig['closeOnOutsideClick']>(false);
-  public readonly disposeOnNavigation = input<OverlayConfig['disposeOnNavigation']>(false);
+  public readonly closeOnOutsideClick =
+    input<OverlayConfig['closeOnOutsideClick']>(false);
+  public readonly disposeOnNavigation =
+    input<OverlayConfig['disposeOnNavigation']>(false);
   public readonly width = input<OverlayConfig['width']>(undefined);
   public readonly height = input<OverlayConfig['height']>(undefined);
   public readonly maxWidth = input<OverlayConfig['maxWidth']>(undefined);
@@ -60,30 +76,35 @@ export class C3OverlayPaneComponent {
   private readonly _router = inject(Router);
   private readonly _destroyRef = inject(DestroyRef);
 
-  public readonly contentRef = viewChild('overlayContent', { read: ElementRef<HTMLDivElement> });
+  public readonly contentRef = viewChild('overlayContent', {
+    read: ElementRef<HTMLDivElement>,
+  });
 
   public readonly contentStyles = computed<Record<string, string>>(() => {
-    const style: Record<string, string> = { position: 'absolute' };
+    const style: Record<string, string> = {
+      position: 'absolute',
+      zIndex: '1000',
+      pointerEvents: 'auto',
+    };
     const pos = this.position(); // On appelle la fonction input
     if (typeof pos === 'string') {
       switch (pos) {
         case 'center':
           return {
-            position: 'absolute',
+            ...style,
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
           };
         case 'top-left':
           return {
-            position: 'absolute',
+            ...style,
             top: '0',
-            left: '0'
+            left: '0',
           };
-        // Si on a d’autres positions prédéfinies, on les ajoute ici
       }
     }
-    if (this.width())  style['width'] = coerceCssValue(this.width());
+    if (this.width()) style['width'] = coerceCssValue(this.width());
     if (this.height()) style['height'] = coerceCssValue(this.height());
     return style;
   });
@@ -94,18 +115,14 @@ export class C3OverlayPaneComponent {
     });
 
     effect(() => {
-      if (this.disposeOnNavigation()) 
-        this._router.events.pipe(
-          takeUntilDestroyed(this._destroyRef)
-        ).subscribe(() => this.requestClose.emit());
-    }, {
-      allowSignalWrites: true
+      if (this.disposeOnNavigation())
+        this._router.events
+          .pipe(takeUntilDestroyed(this._destroyRef))
+          .subscribe(() => this.requestClose.emit());
     });
   }
 
   public onBackdropClick(event: MouseEvent): void {
-    if (this.closeOnOutsideClick()) 
-        this.requestClose.emit();
+    if (this.closeOnOutsideClick()) this.requestClose.emit();
   }
-
 }

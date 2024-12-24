@@ -1,5 +1,6 @@
 :host {
   display: flex;
+  flex-direction: column;
   padding: 1rem;
 
   c3-carousel {
@@ -13,14 +14,5 @@
     c3-card {
       margin: 0.25rem 0;
     }
-  }
-
-  h1 {
-    line-height: 4rem;
-    font-size: 3rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    padding: 4rem 1rem;
-    text-align: center;
   }
 }

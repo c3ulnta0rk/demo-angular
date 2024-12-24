@@ -1,0 +1,13 @@
+modules = ["nodejs-20", "web"]
+run = "bun start"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "bun start"]
+
+[[ports]]
+localPort = 4200
+externalPort = 4200
+exposeLocalhost = true
