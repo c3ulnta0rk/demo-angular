@@ -6,7 +6,7 @@ import { Component, input, output } from '@angular/core';
     templateUrl: './my-dialog-example.component.html',
     styleUrl: './my-dialog-example.component.scss',
     host: {
-        class: 'c3-my-dialog-example c3-card',
+        class: 'c3-my-dialog-example c3-card shadow',
     },
 })
 export class MyDialogExampleComponent {

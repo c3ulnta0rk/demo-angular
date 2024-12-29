@@ -1,9 +1,7 @@
 import { Routes } from '@angular/router';
-import { DdExampleComponent } from './pages/dd-example/dd-example.component';
 import { EncapsulationExampleComponent } from './pages/encapsulation-example/encapsulation-example.component';
 import { HomePageComponent } from './pages/home/home-page.component';
 import { DefaultLayoutComponent } from './layouts/default/default.layout.component';
-import { HomeLayoutComponent } from './layouts/home/home.layout.component';
 import { AutoScrollComponent } from './pages/auto-scroll/auto-scroll.component';
 import { WatchSampleComponent } from './pages/watch-sample/watch-sample.component';
 import { TemplateRefComponent } from './pages/template-ref/template-ref.component';
@@ -14,13 +12,9 @@ import { MenuCoulantPage } from './pages/menu-coulant/menu-coulant.component';
 import { ButtonUnderlineComponent } from './pages/button-underline/button-underline.component';
 import { TooltipComponent } from './pages/tooltip/tooltip.component';
 import { OverlayExampleComponent } from './pages/overlay-example/overlay-example.component';
+import { DropdownExamplePageComponent } from './pages/dropdown-example/dropdown-example.component';
 
 export const routes: Routes = [
-  // {
-  //   path: 'home',
-  //   component: HomeLayoutComponent,
-  //   children: [],
-  // },
   {
     path: '',
     component: DefaultLayoutComponent,
@@ -34,11 +28,12 @@ export const routes: Routes = [
       },
       {
         path: 'dd-example',
-        component: DdExampleComponent,
+        component: DropdownExamplePageComponent,
         data: {
           title: 'Dropdown',
         },
-      },{
+      },
+      {
         path: 'overlay-example',
         component: OverlayExampleComponent,
         data: {

@@ -1,14 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ComponentRef,
-  effect,
-  inject,
-  Injector,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
@@ -19,26 +10,24 @@ import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
 import { C3DropdownComponent } from '../../modules/dropdown/dropdown.component';
 
 @Component({
-    selector: 'c3-dd-example',
-    imports: [
-        C3CardComponent,
-        C3DropdownModule,
-        C3OnScrollEndDirective,
-        CarouselComponent,
-        CarouselItemDirective,
-        CommonModule,
-    ],
-    templateUrl: './dd-example.component.html',
-    styleUrl: './dd-example.component.scss'
+  selector: 'c3-dropdown-example',
+  imports: [
+    C3CardComponent,
+    C3DropdownModule,
+    C3OnScrollEndDirective,
+    CarouselComponent,
+    CarouselItemDirective,
+    CommonModule,
+  ],
+  templateUrl: './dropdown-example.component.html',
+  styleUrl: './dropdown-example.component.scss',
 })
-export class DdExampleComponent {
+export class DropdownExamplePageComponent {
   private readonly _dropdown = inject(C3DropdownService);
   public readonly items = Array.from({ length: 178 }, (_, i) => i + 1);
   private readonly dropdowns = signal(
-    new Map<number, C3DropdownComponent<SampleComponent>>()
+    new Map<number, C3DropdownComponent<SampleComponent>>(),
   );
-
-  private readonly _injector = inject(Injector);
 
   openDropdown($event: MouseEvent, items: number): void {
     const element = $event.target as HTMLElement;
