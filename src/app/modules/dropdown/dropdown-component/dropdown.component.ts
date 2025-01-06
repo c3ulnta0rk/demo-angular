@@ -14,7 +14,6 @@ import {
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { ScrollDispatcherService } from '../scrollDispatcher/scrollDispatcher.service';
 import {
   filter,
   fromEvent,
@@ -24,12 +23,13 @@ import {
   Subscription,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ScrollDispatcherService } from '../../scrollDispatcher/scrollDispatcher.service';
 
 @Component({
-    selector: 'c3-dropdown',
-    imports: [],
-    templateUrl: './dropdown.component.html',
-    styleUrl: './dropdown.component.scss'
+  selector: 'c3-dropdown',
+  standalone: false,
+  templateUrl: './dropdown.component.html',
+  styleUrl: './dropdown.component.scss',
 })
 export class C3DropdownComponent<T> {
   public readonly element = input<HTMLElement | undefined>();
@@ -45,7 +45,7 @@ export class C3DropdownComponent<T> {
   public readonly componentRef = signal<ComponentRef<T> | undefined>(undefined);
 
   public readonly componentRefInstance = computed(
-    () => this.componentRef()?.instance
+    () => this.componentRef()?.instance,
   );
 
   private readonly cdr = inject(ChangeDetectorRef);
@@ -62,10 +62,10 @@ export class C3DropdownComponent<T> {
   public readonly visible = signal<boolean>(false);
 
   private readonly scrollSubscription = signal<Subscription | undefined>(
-    undefined
+    undefined,
   );
   private readonly clickOutsideSubscription = signal<Subscription | undefined>(
-    undefined
+    undefined,
   );
 
   constructor() {
@@ -77,22 +77,23 @@ export class C3DropdownComponent<T> {
       },
       {
         allowSignalWrites: true,
-      }
+      },
     );
   }
 
   private openDropdown() {
     if ((!this.component() && !this.templateRef()) || !this.viewContainerRef())
       throw new Error('ViewContainerRef not found');
+    console.log(this.templateRef());
 
     if (this.component()) {
       const componentRef = this.viewContainerRef().createComponent(
-        this.component()
+        this.component(),
       );
       this.componentRef.set(componentRef);
     } else if (this.templateRef()) {
       const viewRef = this.viewContainerRef().createEmbeddedView(
-        this.templateRef()
+        this.templateRef(),
       );
 
       this.componentRef.set(viewRef.rootNodes[0] as ComponentRef<T>);
@@ -112,7 +113,7 @@ export class C3DropdownComponent<T> {
   #getClickOutsideObservable(element: HTMLElement) {
     return fromEvent(document, 'click').pipe(
       filter((event) => !element.contains(event.target as Node)),
-      map(() => element)
+      map(() => element),
     );
   }
 
@@ -120,13 +121,13 @@ export class C3DropdownComponent<T> {
     if (!this.element() || !this.componentRef()) return;
 
     const clickOutsideSubscription = this.#getClickOutsideObservable(
-      this.element()
+      this.element(),
     )
       .pipe(
         skipUntil(interval(100)),
         filter(Boolean),
         filter((target) => this.element().isEqualNode(target)),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
         this.close.emit();
@@ -143,7 +144,7 @@ export class C3DropdownComponent<T> {
 
     const parentScrollObservable =
       this.scrollDispatcherService.getScrollContainerObservableForElement(
-        this.element()
+        this.element(),
       );
 
     if (!parentScrollObservable?.length) return;
@@ -152,7 +153,7 @@ export class C3DropdownComponent<T> {
 
     if (scrollObservable) {
       const scrollSubscription = scrollObservable.subscribe(() =>
-        this.#calculatePosition(this.position())
+        this.#calculatePosition(this.position()),
       );
 
       this.scrollSubscription.set(scrollSubscription);
@@ -172,7 +173,7 @@ export class C3DropdownComponent<T> {
 
     const [scrollContainerElement] =
       this.scrollDispatcherService.getScrollContainerObservableForElement(
-        element
+        element,
       );
     const scrollContainerRect = scrollContainerElement?.getBoundingClientRect();
 
@@ -191,7 +192,7 @@ export class C3DropdownComponent<T> {
 
   #isOutOfScroller(
     rect: DOMRect,
-    scrollContainerRect: DOMRect | undefined
+    scrollContainerRect: DOMRect | undefined,
   ): boolean {
     return (
       scrollContainerRect &&
@@ -205,7 +206,7 @@ export class C3DropdownComponent<T> {
   #adjustPosition(
     rect: DOMRect,
     position: string,
-    viewportHeight: number
+    viewportHeight: number,
   ): void {
     const elementHeight = rect.height;
 
@@ -243,7 +244,7 @@ export class C3DropdownComponent<T> {
   #positionBelow(
     rect: DOMRect,
     elementHeight: number,
-    viewportHeight: number
+    viewportHeight: number,
   ): void {
     this.top.update((oldvalue) => {
       if (!rect || !elementHeight || !viewportHeight) return oldvalue;

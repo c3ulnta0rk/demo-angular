@@ -10,9 +10,9 @@ import {
   Type,
 } from '@angular/core';
 import { c3ApplyInputValues } from '../../utils/fill-inputs';
-import { C3DropdownComponent } from './dropdown.component';
 import { Subject } from 'rxjs';
 import { C3InjectorService } from '../injector/injector.service';
+import { C3DropdownComponent } from './dropdown-component/dropdown.component';
 
 export interface C3DropdownConfig<T = any> {
   element: HTMLElement;
@@ -44,7 +44,7 @@ export class C3DropdownService {
 
   public open<MountedComponent>(config: C3DropdownConfig<MountedComponent>) {
     const dropdown = this._c3Injector.injectComponent(
-      C3DropdownComponent<MountedComponent>
+      C3DropdownComponent<MountedComponent>,
     );
     if (!dropdown) throw new Error('Could not create dropdown component');
 
@@ -69,7 +69,7 @@ export class C3DropdownService {
       {
         injector: this._injector,
         allowSignalWrites: true,
-      }
+      },
     );
 
     return {
@@ -81,7 +81,7 @@ export class C3DropdownService {
   }
 
   public close(
-    componentRef: ComponentRef<any> | C3DropdownComponent<any>
+    componentRef: ComponentRef<any> | C3DropdownComponent<any>,
   ): void {
     if (componentRef instanceof C3DropdownComponent) {
       const mountedDropdown = this._mountedDropdowns.get(componentRef);

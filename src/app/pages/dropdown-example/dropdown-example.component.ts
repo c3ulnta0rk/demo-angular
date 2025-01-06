@@ -7,7 +7,7 @@ import { C3OnScrollEndDirective } from '../../directives/onScrollEnd.directive';
 import { SampleComponent } from '../../components/sample/sample.component';
 import { C3DropdownService } from '../../modules/dropdown/dropdown.service';
 import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
-import { C3DropdownComponent } from '../../modules/dropdown/dropdown.component';
+import { C3DropdownComponent } from '../../modules/dropdown/dropdown-component/dropdown.component';
 
 @Component({
   selector: 'c3-dropdown-example',
