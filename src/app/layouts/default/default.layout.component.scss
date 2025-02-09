@@ -1,54 +1,56 @@
+
 .layout-container {
   display: grid;
   grid-template-areas:
     "sidebar toolbar"
     "sidebar main";
-  grid-template-columns: 250px 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: auto 1fr;
   height: 100vh;
-  overflow: hidden;
-  background-color: var(--background-color);
-  color: var(--text-color);
 }
 
 .sidebar {
   grid-area: sidebar;
-  background-color: var(--sidebar-bg);
-  padding: 20px;
-  overflow-y: auto;
-  max-height: 100vh;
+  background: #f5f5f5;
+  padding: 1rem;
+  border-right: 1px solid #ddd;
+  transition: width 0.3s ease;
+  width: 250px;
 
-  nav {
+  &.collapsed {
+    width: 60px;
+    
     ul {
-      list-style-type: none;
-      padding: 0;
-      margin: 0;
+      align-items: center;
+      
+      a {
+        width: 40px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+  }
 
-      li {
-        margin-bottom: 10px;
-        width: 100%;
+  nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
-        a {
-          display: block;
-          text-decoration: none;
-          color: var(--text-color);
-          padding: 10px;
-          background-color: var(--link-bg);
-          border-radius: 4px;
-          transition: all 0.2s ease;
-          box-shadow: 0 2px 5px var(--shadow-color);
-
-          &:hover {
-            background-color: var(--link-hover-bg);
-            box-shadow: 0 4px 8px var(--shadow-color);
-          }
-
-          &.active {
-            font-weight: bold;
-            background-color: var(--link-active-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
-          }
-        }
+    a {
+      color: inherit;
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+      display: block;
+      
+      &:hover {
+        background: #eee;
+      }
+      
+      &.active {
+        background: #e0e0e0;
       }
     }
   }
@@ -56,31 +58,26 @@
 
 .toolbar {
   grid-area: toolbar;
-  background-color: var(--toolbar-bg);
-  padding: 10px;
+  background: white;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
 }
 
 .main-content {
   grid-area: main;
-  overflow-y: auto;
-  padding: 20px;
+  padding: 1rem;
+  overflow: auto;
 }
 
-/* Pour assurer la compatibilité avec les navigateurs plus anciens */
-@supports not (display: grid) {
-  .layout-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
-  .sidebar {
-    width: 250px;
-    flex-shrink: 0;
-  }
-
-  .main-content {
-    flex: 1;
-    overflow-y: auto;
+.toggle-btn {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  
+  &:hover {
+    background: #eee;
+    border-radius: 4px;
   }
 }

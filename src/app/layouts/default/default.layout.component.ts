@@ -1,67 +1,30 @@
+import { Component, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
-import {
-  RouterModule,
-  Router,
-  Route,
-  NavigationEnd,
-  Event,
-} from '@angular/router';
 import { ToolbarComponent } from '../../components/toolbar/toolbar.component';
-import { Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
-    selector: 'c3-default-layout',
-    imports: [CommonModule, RouterModule, ToolbarComponent],
-    templateUrl: './default.layout.component.html',
-    styleUrl: './default.layout.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-default-layout',
+  standalone: true,
+  imports: [CommonModule, RouterModule, ToolbarComponent],
+  templateUrl: './default.layout.component.html',
+  styleUrl: './default.layout.component.scss'
 })
 export class DefaultLayoutComponent {
-  private router = inject(Router);
-  public childRoutes = signal<Route[]>([]);
-  public activePageTitle = signal<string>('');
-  private destroy$ = new Subject<void>();
+  public readonly childRoutes = signal([
+    { path: 'dd-example', data: { title: 'Dropdown Example' } },
+    { path: 'encapsulation-example', data: { title: 'Encapsulation Example' } },
+    { path: 'auto-scroll', data: { title: 'Auto-scroll Example' } },
+    { path: 'watch-sample', data: { title: 'Watch Example' } },
+    { path: 'template-ref-sample', data: { title: 'Template Ref Example' } },
+    { path: 'animation-example', data: { title: 'Animation Example' } },
+    { path: 'rotation-example', data: { title: 'Rotation Example' } }
+  ]);
 
-  ngOnInit() {
-    const currentRoute = this.router.config.find(
-      (route) => route.component === DefaultLayoutComponent
-    );
-    if (currentRoute && currentRoute.children) {
-      this.childRoutes.set(
-        currentRoute.children.filter((route) => !route.redirectTo)
-      );
-    }
+  public readonly activePageTitle = signal('');
+  public isCollapsed = signal(false);
 
-    this.router.events
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event: Event) => {
-        if (event instanceof NavigationEnd) {
-          this.updatePageTitle();
-        }
-      });
-
-    // Initial title update
-    this.updatePageTitle();
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private updatePageTitle() {
-    let route = this.router.routerState.root;
-    while (route.firstChild) {
-      route = route.firstChild;
-    }
-    const title =
-      route.snapshot.data['title'] || route.snapshot.url.join('/') || 'Home';
-    this.activePageTitle.set(title);
+  toggleSidebar() {
+    this.isCollapsed.update(value => !value);
   }
 }

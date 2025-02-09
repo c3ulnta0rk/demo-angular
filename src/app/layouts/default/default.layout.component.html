@@ -1,5 +1,9 @@
+
 <div class="layout-container">
-  <aside class="sidebar">
+  <aside class="sidebar" [class.collapsed]="isCollapsed()">
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      {{ isCollapsed() ? '→' : '←' }}
+    </button>
     <nav>
       <ul>
         @for (route of childRoutes(); track route.path) {
