@@ -15,8 +15,5 @@ localPort = 4200
 externalPort = 4200
 exposeLocalhost = true
 
-[javascript]
-nodeVersion = "20"
-
 [dev]
 disableWatcherAutoRun = true
