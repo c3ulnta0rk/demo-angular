@@ -1,5 +1,8 @@
+
 modules = ["nodejs-20", "web"]
 run = "bun start"
+onBoot = "bun install"
+hidden = [".config", "package-lock.json"]
 
 [nix]
 channel = "stable-24_05"
@@ -11,3 +14,9 @@ run = ["sh", "-c", "bun start"]
 localPort = 4200
 externalPort = 4200
 exposeLocalhost = true
+
+[javascript]
+nodeVersion = "20"
+
+[dev]
+disableWatcherAutoRun = true
