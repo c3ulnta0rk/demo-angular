@@ -1,0 +1,11 @@
+
+<section>
+  <h4>Simple Carousel Example</h4>
+  <c3-carousel>
+    @for (item of items; track item) {
+      <c3-card c3CarouselItem>
+        <p>Item {{ item }}</p>
+      </c3-card>
+    }
+  </c3-carousel>
+</section>

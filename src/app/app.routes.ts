@@ -13,6 +13,7 @@ import { ButtonUnderlineComponent } from './pages/button-underline/button-underl
 import { TooltipComponent } from './pages/tooltip/tooltip.component';
 import { OverlayExampleComponent } from './pages/overlay-example/overlay-example.component';
 import { DropdownExamplePageComponent } from './pages/dropdown-example/dropdown-example.component';
+import { CarouselExampleComponent } from './pages/carousel-example/carousel-example.component';
 
 export const routes: Routes = [
   {
@@ -108,6 +109,13 @@ export const routes: Routes = [
         component: TooltipComponent,
         data: {
           title: 'Tooltip sample',
+        },
+      },
+      {
+        path: 'carousel-example',
+        component: CarouselExampleComponent,
+        data: {
+          title: 'Carousel Example',
         },
       },
       { path: '**', redirectTo: '/home' },
