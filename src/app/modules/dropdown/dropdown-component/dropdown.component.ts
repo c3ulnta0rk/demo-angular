@@ -84,7 +84,6 @@ export class C3DropdownComponent<T> {
   private openDropdown() {
     if ((!this.component() && !this.templateRef()) || !this.viewContainerRef())
       throw new Error('ViewContainerRef not found');
-    console.log(this.templateRef());
 
     if (this.component()) {
       const componentRef = this.viewContainerRef().createComponent(

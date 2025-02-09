@@ -14,9 +14,17 @@
 <section>
   <h4>Dropdown sur un button</h4>
   <button [c3DropdownActivator]="templateTarget">Open dropdown</button>
-  <c3-template-dropdown #templateTarget> <p>coucouxzzzz</p> </c3-template-dropdown>
+  <c3-template-dropdown #templateTarget>
+    <p>coucouxzzzz</p>
+  </c3-template-dropdown>
 </section>
 
 <section>
   <h4>Dropdown sur un input</h4>
+
+  <input type="text" [c3DropdownActivator]="templateTarget" />
+
+  <c3-template-dropdown #templateTarget>
+    <p>coucouxzzzz</p>
+  </c3-template-dropdown>
 </section>
