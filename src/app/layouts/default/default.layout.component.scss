@@ -60,9 +60,12 @@
 .toolbar {
   grid-area: toolbar;
   background: var(--toolbar-bg);
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   border-bottom: 1px solid var(--shadow-color);
   color: var(--text-color);
+  height: 48px;
+  display: flex;
+  align-items: center;
 }
 
 .main-content {
