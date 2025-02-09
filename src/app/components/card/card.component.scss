@@ -1,4 +1,5 @@
 
 :host(.c3-card) {
-  @apply block bg-white rounded-lg shadow-lg p-4 min-w-[320px] min-h-[320px];
+  @apply block rounded-lg shadow-lg p-4 min-w-[320px] min-h-[320px];
+  background-color: var(--background-color);
 }
