@@ -1,19 +1,11 @@
-
-modules = ["nodejs-20", "web"]
-run = "bun start"
-onBoot = "bun install"
-hidden = [".config", "package-lock.json"]
+entrypoint = "server.ts"
+run = "npm run start"
+modules = ["angular-node-20"]
 
 [nix]
 channel = "stable-24_05"
 
-[deployment]
-run = ["sh", "-c", "bun start"]
-
 [[ports]]
 localPort = 4200
-externalPort = 4200
+externalPort = 80
 exposeLocalhost = true
-
-[dev]
-disableWatcherAutoRun = true
