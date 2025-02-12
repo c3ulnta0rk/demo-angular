@@ -1,12 +1,12 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SortableContainerDirective } from './directives/sortable-container.directive';
-import { SortableItemDirective } from './directives/sortable-item.directive';
+import { SortableListDirective } from './directives/sortableList.directive';
+import { DraggableDirective } from './directives/draggable.directive';
 
 @NgModule({
-  declarations: [SortableContainerDirective, SortableItemDirective],
+  declarations: [SortableListDirective, DraggableDirective],
   imports: [CommonModule],
-  exports: [SortableContainerDirective, SortableItemDirective]
+  exports: [SortableListDirective, DraggableDirective]
 })
-export class SortableListModule {}
+export class SortableListModule { }
