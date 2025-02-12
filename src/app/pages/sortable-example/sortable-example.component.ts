@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SortableListModule } from '../../modules/sortableList/sortable-list.module';
 
@@ -11,11 +11,11 @@ import { SortableListModule } from '../../modules/sortableList/sortable-list.mod
   imports: [CommonModule, SortableListModule]
 })
 export class SortableExampleComponent {
-  items = [
+  public readonly items = signal([
     { id: 1, text: 'Item 1' },
     { id: 2, text: 'Item 2' },
     { id: 3, text: 'Item 3' },
     { id: 4, text: 'Item 4' },
     { id: 5, text: 'Item 5' }
-  ];
+  ]);
 }

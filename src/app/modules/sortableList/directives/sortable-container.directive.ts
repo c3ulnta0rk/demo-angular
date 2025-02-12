@@ -1,9 +1,10 @@
 
-import { Directive, ElementRef } from '@angular/core';
+import { Directive, ElementRef, inject } from '@angular/core';
 
 @Directive({
-  selector: '[sortableContainer]'
+  selector: '[sortableContainer]',
+  standalone: false
 })
 export class SortableContainerDirective {
-  constructor(public elementRef: ElementRef<HTMLElement>) {}
+  public readonly elementRef = inject(ElementRef<HTMLElement>)
 }

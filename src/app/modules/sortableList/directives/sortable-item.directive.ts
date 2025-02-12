@@ -1,17 +1,16 @@
 
-import { Directive, ElementRef, HostBinding, HostListener } from '@angular/core';
+import { Directive, ElementRef, HostBinding, HostListener, inject } from '@angular/core';
 import { SortableService } from '../sortable.service';
 
 @Directive({
-  selector: '[sortableItem]'
+  selector: '[sortableItem]',
+  standalone: false
 })
 export class SortableItemDirective {
   @HostBinding('attr.draggable') draggable = true;
 
-  constructor(
-    private element: ElementRef<HTMLElement>,
-    private sortableService: SortableService
-  ) {}
+  private readonly element = inject(ElementRef<HTMLElement>);
+  private readonly sortableService = inject(SortableService);
 
   @HostListener('dragstart', ['$event'])
   onDragStart(event: DragEvent): void {

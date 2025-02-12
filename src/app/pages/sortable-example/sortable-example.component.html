@@ -2,12 +2,13 @@
 <div class="container">
   <h2>Liste triable</h2>
   <div class="sortable-list" sortableContainer>
-    <div 
-      *ngFor="let item of items" 
-      class="sortable-item"
-      sortableItem
-    >
-      {{ item.text }}
-    </div>
+    @for (item of items(); track item) {
+      <div
+        class="sortable-item"
+        sortableItem
+      >
+        {{ item.text }}
+      </div>
+    }
   </div>
 </div>
