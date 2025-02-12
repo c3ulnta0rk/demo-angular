@@ -1,5 +1,6 @@
 
 import { Injectable } from '@angular/core';
+import { SortableContainerDirective } from './directives/sortable-container.directive';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,11 @@ export class SortableService {
   private draggedItem: HTMLElement | null = null;
   private targetItem: HTMLElement | null = null;
   private placeholder: HTMLElement | null = null;
+  private container: SortableContainerDirective | null = null;
+
+  setContainer(container: SortableContainerDirective): void {
+    this.container = container;
+  }
 
   setDraggedItem(element: HTMLElement, placeholder: HTMLElement): void {
     this.draggedItem = element;
@@ -29,18 +35,16 @@ export class SortableService {
   }
 
   handleDrop(): void {
-    if (this.draggedItem && this.targetItem) {
-      const container = this.draggedItem.parentElement;
-      if (container) {
-        const items = Array.from(container.children);
-        const draggedIdx = items.indexOf(this.draggedItem);
-        const targetIdx = items.indexOf(this.targetItem);
-        
-        if (draggedIdx > targetIdx) {
-          this.targetItem.parentNode?.insertBefore(this.draggedItem, this.targetItem);
-        } else {
-          this.targetItem.parentNode?.insertBefore(this.draggedItem, this.targetItem.nextSibling);
-        }
+    if (this.draggedItem && this.targetItem && this.container) {
+      const containerElement = this.container.elementRef.nativeElement;
+      const items = Array.from(containerElement.children);
+      const draggedIdx = items.indexOf(this.draggedItem);
+      const targetIdx = items.indexOf(this.targetItem);
+      
+      if (draggedIdx > targetIdx) {
+        this.targetItem.parentNode?.insertBefore(this.draggedItem, this.targetItem);
+      } else {
+        this.targetItem.parentNode?.insertBefore(this.draggedItem, this.targetItem.nextSibling);
       }
     }
     
