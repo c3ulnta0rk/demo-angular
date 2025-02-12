@@ -7,14 +7,24 @@ import { Injectable } from '@angular/core';
 export class SortableService {
   private draggedItem: HTMLElement | null = null;
   private targetItem: HTMLElement | null = null;
+  private placeholder: HTMLElement | null = null;
 
-  setDraggedItem(element: HTMLElement): void {
+  setDraggedItem(element: HTMLElement, placeholder: HTMLElement): void {
     this.draggedItem = element;
+    this.placeholder = placeholder;
   }
 
   updateTargetItem(element: HTMLElement): void {
     if (element !== this.draggedItem) {
       this.targetItem = element;
+    }
+  }
+
+  updatePlaceholderPosition(x: number, y: number): void {
+    if (this.placeholder && this.draggedItem) {
+      const rect = this.draggedItem.getBoundingClientRect();
+      this.placeholder.style.left = `${x - rect.width / 2}px`;
+      this.placeholder.style.top = `${y - rect.height / 2}px`;
     }
   }
 
@@ -33,7 +43,13 @@ export class SortableService {
         }
       }
     }
+    
+    if (this.placeholder) {
+      this.placeholder.remove();
+    }
+    
     this.draggedItem = null;
     this.targetItem = null;
+    this.placeholder = null;
   }
 }

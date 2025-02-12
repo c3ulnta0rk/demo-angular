@@ -14,7 +14,21 @@ export class SortableItemDirective {
 
   @HostListener('dragstart', ['$event'])
   onDragStart(event: DragEvent): void {
-    this.sortableService.setDraggedItem(this.element.nativeElement);
+    const element = this.element.nativeElement;
+    const rect = element.getBoundingClientRect();
+    
+    // Create placeholder
+    const placeholder = element.cloneNode(true) as HTMLElement;
+    placeholder.style.position = 'fixed';
+    placeholder.style.left = `${rect.left}px`;
+    placeholder.style.top = `${rect.top}px`;
+    placeholder.style.width = `${rect.width}px`;
+    placeholder.style.height = `${rect.height}px`;
+    placeholder.style.opacity = '0.6';
+    placeholder.style.pointerEvents = 'none';
+    document.body.appendChild(placeholder);
+
+    this.sortableService.setDraggedItem(element, placeholder);
     event.dataTransfer?.setData('text/plain', '');
   }
 
@@ -22,6 +36,11 @@ export class SortableItemDirective {
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     this.sortableService.updateTargetItem(this.element.nativeElement);
+  }
+
+  @HostListener('drag', ['$event'])
+  onDrag(event: DragEvent): void {
+    this.sortableService.updatePlaceholderPosition(event.clientX, event.clientY);
   }
 
   @HostListener('dragend')
