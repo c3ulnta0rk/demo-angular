@@ -14,6 +14,7 @@ import { TooltipComponent } from './pages/tooltip/tooltip.component';
 import { OverlayExampleComponent } from './pages/overlay-example/overlay-example.component';
 import { DropdownExamplePageComponent } from './pages/dropdown-example/dropdown-example.component';
 import { CarouselExampleComponent } from './pages/carousel-example/carousel-example.component';
+import { SortableExampleComponent } from './pages/sortable-example/sortable-example.component';
 
 export const routes: Routes = [
   {
@@ -116,6 +117,13 @@ export const routes: Routes = [
         component: CarouselExampleComponent,
         data: {
           title: 'Carousel Example',
+        },
+      },
+      {
+        path: 'sortable-example',
+        component: SortableExampleComponent,
+        data: {
+          title: 'Liste triable',
         },
       },
       { path: '**', redirectTo: '/home' },
