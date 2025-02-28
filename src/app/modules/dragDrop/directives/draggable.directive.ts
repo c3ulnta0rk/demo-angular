@@ -93,23 +93,52 @@ export class DraggableDirective {
     this.previousDropTarget = null;
   };
 
-  private movePlaceholderToDropTarget(dropTarget: HTMLElement) {
+  private async movePlaceholderToDropTarget(dropTarget: HTMLElement) {
     const placeholder = this.dragDropService.getPlaceholder();
     if (!placeholder) return;
 
     const targetRect = dropTarget.getBoundingClientRect();
-    placeholder.style.left = `${targetRect.left}px`;
-    placeholder.style.top = `${targetRect.top}px`;
 
+    await this.animatePlaceholder(placeholder, targetRect.left, targetRect.top);
     dropTarget.parentNode?.insertBefore(placeholder, dropTarget);
+  }
+
+  private animatePlaceholder(
+    placeholder: HTMLElement,
+    targetX: number,
+    targetY: number,
+  ): Promise<void> {
+    return new Promise<void>((resolve) => {
+      const startX = placeholder.getBoundingClientRect().left;
+      const startY = placeholder.getBoundingClientRect().top;
+      const startTime = performance.now();
+      const duration = 300;
+
+      const animate = (currentTime: number) => {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+        const currentX = startX + (targetX - startX) * easeProgress;
+        const currentY = startY + (targetY - startY) * easeProgress;
+
+        placeholder.style.left = `${currentX}px`;
+        placeholder.style.top = `${currentY}px`;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          resolve();
+        }
+      };
+
+      requestAnimationFrame(animate);
+    });
   }
 
   private resetPlaceholder() {
     const placeholder = this.dragDropService.getPlaceholder();
     if (!placeholder) return;
-
-    placeholder.style.left = `${this.initialPlaceholderLeft}px`;
-    placeholder.style.top = `${this.initialPlaceholderTop}px`;
 
     if (placeholder.parentNode && this.element.parentNode) {
       this.element.parentNode.insertBefore(placeholder, this.element);

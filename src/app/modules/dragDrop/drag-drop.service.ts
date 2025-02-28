@@ -68,8 +68,7 @@ export class DragDropService {
 
   drop() {
     if (this.draggingElement() && this.currentDropTarget()) {
-      this.currentDropTarget()!.appendChild(this.draggingElement()!); // Insère l'élément DANS la cible
-      // this.currentDropTarget().parentNode!.insertBefore(this.draggingElement(), this.currentDropTarget()); // Insère AVANT la cible. Choisissez la bonne méthode!
+      this.currentDropTarget()!.appendChild(this.draggingElement()!);
     }
     this.draggingElement.set(null);
     this.currentDropTarget.set(null);
