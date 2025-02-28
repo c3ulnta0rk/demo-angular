@@ -1,7 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed } from "@angular/core";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class DragDropService {
   private draggingElement = signal<HTMLElement | null>(null);
@@ -32,36 +32,46 @@ export class DragDropService {
   }
 
   getDropTargetUnderPoint(x: number, y: number): HTMLElement | null {
-    return this.dropTargets().reduce((closest, current) => {
-      const box = current.getBoundingClientRect();
-      const offset = this.pointDistance(
-        x,
-        y,
-        box.left + box.width / 2,
-        box.top + box.height / 2
-      );
-      if (
-        offset <
-        this.pointDistance(
+    let closestTarget: HTMLElement | null = null;
+    let closestDistance = Infinity;
+
+    for (const target of this.dropTargets()) {
+      const box = target.getBoundingClientRect();
+
+      //Vérifie si le point est dans la cible
+      if (x >= box.left && x <= box.right && y >= box.top && y <= box.bottom) {
+        const distance = this.pointDistance(
           x,
           y,
-          closest.getBoundingClientRect().left,
-          closest.getBoundingClientRect().top
-        )
-      ) {
-        return current;
-      } else {
-        return closest;
+          box.left + box.width / 2,
+          box.top + box.height / 2,
+        );
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestTarget = target;
+        }
       }
-    }, this.dropTargets()[0]);
+    }
+
+    return closestTarget;
   }
 
   private pointDistance(
     x1: number,
     y1: number,
     x2: number,
-    y2: number
+    y2: number,
   ): number {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+  }
+
+  drop() {
+    if (this.draggingElement() && this.currentDropTarget()) {
+      this.currentDropTarget()!.appendChild(this.draggingElement()!); // Insère l'élément DANS la cible
+      // this.currentDropTarget().parentNode!.insertBefore(this.draggingElement(), this.currentDropTarget()); // Insère AVANT la cible. Choisissez la bonne méthode!
+    }
+    this.draggingElement.set(null);
+    this.currentDropTarget.set(null);
   }
 }

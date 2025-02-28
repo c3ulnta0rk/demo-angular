@@ -4,32 +4,39 @@ import {
   inject,
   effect,
   HostListener,
-} from '@angular/core';
-import { DragDropService } from '../drag-drop.service';
+  PLATFORM_ID,
+} from "@angular/core";
+import { DragDropService } from "../drag-drop.service";
+import { isPlatformBrowser } from "@angular/common";
 
 @Directive({
-    selector: '[draggable]',
-    standalone: false
+  selector: "[draggable]",
+  standalone: false,
 })
 export class DraggableDirective {
   private element = inject(ElementRef<HTMLElement>).nativeElement;
   private dragDropService = inject(DragDropService);
+  private platformId = inject(PLATFORM_ID);
   private startX: number;
   private startY: number;
+  private initialPlaceholderLeft: number;
+  private initialPlaceholderTop: number;
+  private previousDropTarget: HTMLElement | null = null;
 
   constructor() {
-    effect(() => {
-      if (this.dragDropService.isDragging()) {
-        document.addEventListener('mousemove', this.onMouseMove);
-        document.addEventListener('mouseup', this.onMouseUp);
-      } else {
-        document.removeEventListener('mousemove', this.onMouseMove);
-        document.removeEventListener('mouseup', this.onMouseUp);
-      }
-    });
+    if (isPlatformBrowser(this.platformId))
+      effect(() => {
+        if (this.dragDropService.isDragging()) {
+          document.addEventListener("mousemove", this.onMouseMove);
+          document.addEventListener("mouseup", this.onMouseUp);
+        } else {
+          document.removeEventListener("mousemove", this.onMouseMove);
+          document.removeEventListener("mouseup", this.onMouseUp);
+        }
+      });
   }
 
-  @HostListener('mousedown', ['$event'])
+  @HostListener("mousedown", ["$event"])
   onMouseDown(event: MouseEvent) {
     event.preventDefault();
     const rect = this.element.getBoundingClientRect();
@@ -40,13 +47,17 @@ export class DraggableDirective {
   }
 
   private createPlaceholder() {
-    const placeholder = document.createElement('div');
-    placeholder.classList.add('placeholder');
+    const placeholder = document.createElement("div");
+    placeholder.classList.add("placeholder");
     placeholder.style.width = `${this.element.offsetWidth}px`;
     placeholder.style.height = `${this.element.offsetHeight}px`;
     const rect = this.element.getBoundingClientRect();
     placeholder.style.left = `${rect.left}px`;
     placeholder.style.top = `${rect.top}px`;
+
+    this.initialPlaceholderLeft = rect.left;
+    this.initialPlaceholderTop = rect.top;
+
     document.body.appendChild(placeholder);
     this.dragDropService.setPlaceholder(placeholder);
   }
@@ -54,29 +65,32 @@ export class DraggableDirective {
   private onMouseMove = (event: MouseEvent) => {
     const x = event.clientX - this.startX;
     const y = event.clientY - this.startY;
-    this.element.style.position = 'fixed';
+    this.element.style.position = "fixed";
     this.element.style.left = `${x}px`;
     this.element.style.top = `${y}px`;
 
     const dropTarget = this.dragDropService.getDropTargetUnderPoint(
       event.clientX,
-      event.clientY
+      event.clientY,
     );
+
     if (dropTarget) {
       this.dragDropService.currentDropTarget.set(dropTarget);
-      this.movePlaceholderToDropTarget(dropTarget);
-    } else {
-      this.dragDropService.currentDropTarget.set(null);
-      this.resetPlaceholder();
-    }
+      if (dropTarget !== this.previousDropTarget) {
+        this.movePlaceholderToDropTarget(dropTarget);
+        this.previousDropTarget = dropTarget;
+      }
+    } else if (!this.previousDropTarget) this.resetPlaceholder();
   };
 
   private onMouseUp = () => {
+    this.dragDropService.drop();
     this.dragDropService.setDraggingElement(null);
-    this.element.style.position = '';
-    this.element.style.left = '';
-    this.element.style.top = '';
+    this.element.style.position = "";
+    this.element.style.left = "";
+    this.element.style.top = "";
     this.removePlaceholder();
+    this.previousDropTarget = null;
   };
 
   private movePlaceholderToDropTarget(dropTarget: HTMLElement) {
@@ -84,59 +98,22 @@ export class DraggableDirective {
     if (!placeholder) return;
 
     const targetRect = dropTarget.getBoundingClientRect();
-    const placeholderRect = placeholder.getBoundingClientRect();
+    placeholder.style.left = `${targetRect.left}px`;
+    placeholder.style.top = `${targetRect.top}px`;
 
-    const targetX =
-      targetRect.left + (targetRect.width - placeholderRect.width) / 2;
-    const targetY =
-      targetRect.top + (targetRect.height - placeholderRect.height) / 2;
-
-    this.animatePlaceholder(placeholder, targetX, targetY);
+    dropTarget.parentNode?.insertBefore(placeholder, dropTarget);
   }
 
   private resetPlaceholder() {
     const placeholder = this.dragDropService.getPlaceholder();
     if (!placeholder) return;
 
-    const initialPosition = this.element.getBoundingClientRect();
-    this.animatePlaceholder(
-      placeholder,
-      initialPosition.left,
-      initialPosition.top
-    );
-  }
+    placeholder.style.left = `${this.initialPlaceholderLeft}px`;
+    placeholder.style.top = `${this.initialPlaceholderTop}px`;
 
-  private animatePlaceholder(
-    placeholder: HTMLElement,
-    targetX: number,
-    targetY: number
-  ) {
-    const startX =
-      parseFloat(placeholder.style.left) ||
-      placeholder.getBoundingClientRect().left;
-    const startY =
-      parseFloat(placeholder.style.top) ||
-      placeholder.getBoundingClientRect().top;
-    const startTime = performance.now();
-    const duration = 300;
-
-    const animate = (currentTime: number) => {
-      const elapsedTime = currentTime - startTime;
-      const progress = Math.min(elapsedTime / duration, 1);
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
-
-      const currentX = startX + (targetX - startX) * easeProgress;
-      const currentY = startY + (targetY - startY) * easeProgress;
-
-      placeholder.style.left = `${currentX}px`;
-      placeholder.style.top = `${currentY}px`;
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    requestAnimationFrame(animate);
+    if (placeholder.parentNode && this.element.parentNode) {
+      this.element.parentNode.insertBefore(placeholder, this.element);
+    }
   }
 
   private removePlaceholder() {
