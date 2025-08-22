@@ -8,12 +8,13 @@ import {
   input,
   output,
   viewChild,
+  ChangeDetectionStrategy,
+  OnDestroy,
 } from '@angular/core';
 import { OverlayConfig } from './overlay-config';
 import { CommonModule } from '@angular/common';
 import { coerceCssValue } from '../../utils/coerceCssValue';
-import { Router, RouterModule } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'c3-overlay-pane',
@@ -36,14 +37,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styles: [
     `
       :host {
-        /* L’hôte est en position absolue (ou fixed) dans le container overlay principal */
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none; /* Permet de gérer l’empilement, 
-                               on va activer pointer-events seulement sur le backdrop ou le contenu */
+        pointer-events: none;
       }
 
       .overlay-backdrop {
@@ -52,12 +51,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: auto; /* On veut capter le clic */
+        pointer-events: auto;
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class C3OverlayPaneComponent {
+export class C3OverlayPaneComponent implements OnDestroy {
   public readonly hasBackdrop = input<OverlayConfig['hasBackdrop']>(false);
   public readonly backdropClass = input<OverlayConfig['backdropClass']>('');
   public readonly position = input<OverlayConfig['position']>('center');
@@ -75,6 +75,7 @@ export class C3OverlayPaneComponent {
 
   private readonly _router = inject(Router);
   private readonly _destroyRef = inject(DestroyRef);
+  private navigationListener: (() => void) | null = null;
 
   public readonly contentRef = viewChild('overlayContent', {
     read: ElementRef<HTMLDivElement>,
@@ -86,7 +87,7 @@ export class C3OverlayPaneComponent {
       zIndex: '1000',
       pointerEvents: 'auto',
     };
-    const pos = this.position(); // On appelle la fonction input
+    const pos = this.position();
     if (typeof pos === 'string') {
       switch (pos) {
         case 'center':
@@ -115,14 +116,40 @@ export class C3OverlayPaneComponent {
     });
 
     effect(() => {
-      if (this.disposeOnNavigation())
-        this._router.events
-          .pipe(takeUntilDestroyed(this._destroyRef))
-          .subscribe(() => this.requestClose.emit());
+      if (this.disposeOnNavigation()) {
+        this.setupNavigationListener();
+      } else {
+        this.cleanupNavigationListener();
+      }
     });
+
+    this._destroyRef.onDestroy(() => this.ngOnDestroy());
+  }
+
+  private setupNavigationListener(): void {
+    if (this.navigationListener) return;
+
+    const subscription = this._router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.requestClose.emit();
+      }
+    });
+
+    this.navigationListener = () => subscription.unsubscribe();
+  }
+
+  private cleanupNavigationListener(): void {
+    if (this.navigationListener) {
+      this.navigationListener();
+      this.navigationListener = null;
+    }
   }
 
   public onBackdropClick(event: MouseEvent): void {
     if (this.closeOnOutsideClick()) this.requestClose.emit();
+  }
+
+  ngOnDestroy(): void {
+    this.cleanupNavigationListener();
   }
 }

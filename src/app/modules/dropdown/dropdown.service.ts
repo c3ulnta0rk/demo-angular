@@ -8,9 +8,9 @@ import {
   Signal,
   TemplateRef,
   Type,
+  signal,
 } from '@angular/core';
 import { c3ApplyInputValues } from '../../utils/fill-inputs';
-import { Subject } from 'rxjs';
 import { C3InjectorService } from '../injector/injector.service';
 import { C3DropdownComponent } from './dropdown-component/dropdown.component';
 
@@ -31,6 +31,11 @@ export interface C3MountedDropdown<Type> {
   visible: Signal<boolean>;
 }
 
+export interface DropdownReference<T> {
+  close: () => void;
+  afterMounted: Signal<C3DropdownComponent<T> | null>;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -42,7 +47,7 @@ export class C3DropdownService {
   >();
   private readonly _injector = inject(Injector);
 
-  public open<MountedComponent>(config: C3DropdownConfig<MountedComponent>) {
+  public open<MountedComponent>(config: C3DropdownConfig<MountedComponent>): DropdownReference<MountedComponent> {
     const dropdown = this._c3Injector.injectComponent(
       C3DropdownComponent<MountedComponent>,
     );
@@ -52,17 +57,22 @@ export class C3DropdownService {
 
     c3ApplyInputValues(C3DropdownComponent, config, dropdown);
 
+    const afterMountedSignal = signal<C3DropdownComponent<MountedComponent> | null>(null);
+    let closeUnsubscriber: (() => void) | null = null;
+
     const closeSubscription = dropdown.instance.close.subscribe(() => {
       this.close(dropdown);
-      closeSubscription.unsubscribe();
+      if (closeUnsubscriber) {
+        closeUnsubscriber();
+      }
     });
-    const afterMounted = new Subject<C3DropdownComponent<MountedComponent>>();
+
+    closeUnsubscriber = closeSubscription.unsubscribe.bind(closeSubscription);
 
     const watchInstance = effect(
       () => {
         if (dropdown.instance.componentRef()) {
-          afterMounted.next(dropdown.instance);
-          afterMounted.complete();
+          afterMountedSignal.set(dropdown.instance);
           watchInstance.destroy();
         }
       },
@@ -75,8 +85,11 @@ export class C3DropdownService {
     return {
       close: () => {
         this.close(dropdown);
+        if (closeUnsubscriber) {
+          closeUnsubscriber();
+        }
       },
-      afterMounted,
+      afterMounted: afterMountedSignal.asReadonly(),
     };
   }
 

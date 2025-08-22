@@ -1,7 +1,6 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, effect } from '@angular/core';
 import { C3OverlayService } from '../../modules/overlay/overlay.service';
 import { MyDialogExampleComponent } from './my-dialog-example/my-dialog-example.component';
-import { map } from 'rxjs';
 
 @Component({
 selector: 'c3-overlay-example',
@@ -21,11 +20,12 @@ export class OverlayExampleComponent {
       },
     });
 
-    // On peut gérer la fermeture
-    overlayRef.afterComponentRefMounted$
-      .pipe(map((componentRef) => componentRef.instance))
-      .subscribe(({ requestClose }) => {
-        requestClose.subscribe(() => overlayRef.close());
-      });
+    effect(() => {
+      const componentRef = overlayRef.componentRefMounted();
+      if (componentRef) {
+        const { requestClose } = componentRef.instance;
+        const closeSubscription = requestClose.subscribe(() => overlayRef.close());
+      }
+    });
   }
 }

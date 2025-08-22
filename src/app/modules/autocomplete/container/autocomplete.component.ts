@@ -74,8 +74,11 @@ export class C3AutocompleteComponent {
     });
 
     if (dropdown) {
-      dropdown.afterMounted.subscribe((ref) => {
-        this.dropdownRef.set(ref);
+      effect(() => {
+        const ref = dropdown.afterMounted();
+        if (ref) {
+          this.dropdownRef.set(ref);
+        }
       });
     }
   }

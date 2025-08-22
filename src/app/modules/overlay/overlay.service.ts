@@ -20,34 +20,46 @@ export class C3OverlayService {
     component: Type<T>,
     config?: OverlayConfig<T>,
   ): C3OverlayRef<T> {
-    // 1) Injecter un OverlayPane dans l’overlay container
     const overlayPaneRef = this._injector.injectComponent(
       C3OverlayPaneComponent,
     );
 
     if (!overlayPaneRef) throw new Error('Could not create overlay pane');
 
-    // 2) Apply config
     if (config) this.applyPaneConfig(overlayPaneRef, config);
 
     const paneElement = overlayPaneRef.instance;
     const overlayRef = new C3OverlayRef<T>(overlayPaneRef, this._injector);
-    paneElement.contentReady.subscribe(() => {
-      // 2) Injecter le composant final dans le pane
+    
+    let contentReadyUnsubscriber: (() => void) | null = null;
+
+    const contentReadySubscription = paneElement.contentReady.subscribe(() => {
       const componentRef = this._injector.injectComponent(
         component,
         paneElement.contentRef().nativeElement,
       );
       if (!componentRef) throw new Error('Could not create overlay component');
 
-      if (config?.inputs)
-        for (const [key, value] of Object.entries(config.inputs))
+      if (config?.inputs) {
+        for (const [key, value] of Object.entries(config.inputs)) {
           componentRef.setInput(key, value);
+        }
+      }
 
       overlayRef.setComponentRef(componentRef);
+      
+      if (contentReadyUnsubscriber) {
+        contentReadyUnsubscriber();
+      }
     });
 
-    // 3) Garder la ref de l’overlay pour le fermer plus tard
+    contentReadyUnsubscriber = contentReadySubscription.unsubscribe.bind(contentReadySubscription);
+    overlayRef.addCleanupCallback(() => {
+      if (contentReadyUnsubscriber) {
+        contentReadyUnsubscriber();
+      }
+    });
+
     this._overlayRefs.push(overlayRef);
 
     return overlayRef;

@@ -1,6 +1,4 @@
-import { Directive, ElementRef, inject, input, Renderer2, ChangeDetectorRef } from '@angular/core';
-import { fromEvent, timer } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Directive, ElementRef, inject, input, Renderer2, ChangeDetectorRef, OnDestroy, DestroyRef } from '@angular/core';
 
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
@@ -8,40 +6,67 @@ type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
   selector: '[c3Tooltip]',
   standalone: true,
 })
-export class C3TooltipDirective {
-  /**
-   * Directive to display a tooltip on an element.
-   * Use the `c3Tooltip` attribute to specify the tooltip content.
-   *
-   * Example usage:
-   * `<p c3Tooltip="Tooltip text">Hover over me!</p>`
-   */
+export class C3TooltipDirective implements OnDestroy {
   public readonly content = input<string>('', {
     alias: 'c3Tooltip',
   });
+  
   private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
+  
   private tooltipElement: HTMLElement | null = null;
-  private readonly destroy$ = fromEvent(
-    this.elementRef.nativeElement,
-    'destroy'
-  );
+  private mouseenterListener: (() => void) | null = null;
+  private mouseleaveListener: (() => void) | null = null;
+  private debounceTimer: number | null = null;
+  private hideTimer: number | null = null;
 
   constructor() {
-    fromEvent(this.elementRef.nativeElement, 'mouseenter')
-      .pipe(debounceTime(300), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.showTooltip();
-        this.cdr.markForCheck();
-      });
+    this.attachEventListeners();
+    this.destroyRef.onDestroy(() => this.ngOnDestroy());
+  }
 
-    fromEvent(this.elementRef.nativeElement, 'mouseleave')
-      .pipe(debounceTime(300), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.hideTooltip();
-        this.cdr.markForCheck();
-      });
+  private attachEventListeners(): void {
+    const element = this.elementRef.nativeElement;
+    
+    this.mouseenterListener = this.renderer.listen(element, 'mouseenter', () => {
+      this.handleMouseEnter();
+    });
+
+    this.mouseleaveListener = this.renderer.listen(element, 'mouseleave', () => {
+      this.handleMouseLeave();
+    });
+  }
+
+  private handleMouseEnter(): void {
+    if (this.hideTimer !== null) {
+      clearTimeout(this.hideTimer);
+      this.hideTimer = null;
+    }
+
+    if (this.debounceTimer !== null) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    this.debounceTimer = window.setTimeout(() => {
+      this.showTooltip();
+      this.cdr.markForCheck();
+      this.debounceTimer = null;
+    }, 300);
+  }
+
+  private handleMouseLeave(): void {
+    if (this.debounceTimer !== null) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+
+    this.hideTimer = window.setTimeout(() => {
+      this.hideTooltip();
+      this.cdr.markForCheck();
+      this.hideTimer = null;
+    }, 300);
   }
 
   private showTooltip() {
@@ -54,16 +79,15 @@ export class C3TooltipDirective {
     this.showTooltipElement();
   }
 
-  private hideTooltip() {
+  private hideTooltip(): void {
     if (this.tooltipElement) {
       this.renderer.setStyle(this.tooltipElement, 'opacity', '0');
-      timer(300)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          if (this.tooltipElement) {
-            this.renderer.setStyle(this.tooltipElement, 'visibility', 'hidden');
-          }
-        });
+      
+      setTimeout(() => {
+        if (this.tooltipElement) {
+          this.renderer.setStyle(this.tooltipElement, 'visibility', 'hidden');
+        }
+      }, 300);
     }
   }
 
@@ -145,10 +169,33 @@ export class C3TooltipDirective {
     }
   }
 
-  private showTooltipElement() {
+  private showTooltipElement(): void {
     if (this.tooltipElement) {
       this.renderer.setStyle(this.tooltipElement, 'visibility', 'visible');
       this.renderer.setStyle(this.tooltipElement, 'opacity', '1');
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.mouseenterListener) {
+      this.mouseenterListener();
+    }
+    
+    if (this.mouseleaveListener) {
+      this.mouseleaveListener();
+    }
+
+    if (this.debounceTimer !== null) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    if (this.hideTimer !== null) {
+      clearTimeout(this.hideTimer);
+    }
+
+    if (this.tooltipElement) {
+      this.renderer.removeChild(document.body, this.tooltipElement);
+      this.tooltipElement = null;
     }
   }
 }

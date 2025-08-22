@@ -14,16 +14,8 @@ import {
   viewChild,
   ViewContainerRef,
   ChangeDetectionStrategy,
+  OnDestroy,
 } from '@angular/core';
-import {
-  filter,
-  fromEvent,
-  interval,
-  map,
-  skipUntil,
-  Subscription,
-} from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScrollDispatcherService } from '../../scrollDispatcher/scrollDispatcher.service';
 
 @Component({
@@ -33,7 +25,7 @@ selector: 'c3-dropdown',
   styleUrl: './dropdown.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class C3DropdownComponent<T> {
+export class C3DropdownComponent<T> implements OnDestroy {
   public readonly element = input<HTMLElement | undefined>();
   public readonly component = input<Type<T> | undefined>();
   public readonly templateRef = input<TemplateRef<T> | undefined>();
@@ -63,12 +55,8 @@ export class C3DropdownComponent<T> {
   public readonly minWidth = signal<number>(0);
   public readonly visible = signal<boolean>(false);
 
-  private readonly scrollSubscription = signal<Subscription | undefined>(
-    undefined,
-  );
-  private readonly clickOutsideSubscription = signal<Subscription | undefined>(
-    undefined,
-  );
+  private clickOutsideListener: (() => void) | null = null;
+  private clickOutsideTimeout: number | null = null;
 
   constructor() {
     effect(
@@ -81,6 +69,8 @@ export class C3DropdownComponent<T> {
         allowSignalWrites: true,
       },
     );
+    
+    this.destroyRef.onDestroy(() => this.ngOnDestroy());
   }
 
   private openDropdown() {
@@ -101,63 +91,65 @@ export class C3DropdownComponent<T> {
     }
 
     this.#calculatePosition(this.position());
-
+    
     this.#subscribeToScroll();
 
     if (this.closeOnOutsideClick()) {
-      this.#clickOutsideSubscription();
+      this.#setupClickOutsideListener();
     }
-
-    // const componentMounted = new Subject<ComponentRef<T> | undefined>();
   }
 
-  #getClickOutsideObservable(element: HTMLElement) {
-    return fromEvent(document, 'click').pipe(
-      filter((event) => !element.contains(event.target as Node)),
-      map(() => element),
-    );
+  #setupClickOutsideListener(): void {
+    if (!this.element() || !this.componentRef() || this.clickOutsideListener) return;
+
+    this.clickOutsideTimeout = window.setTimeout(() => {
+      this.clickOutsideListener = this.#addClickOutsideListener();
+      this.clickOutsideTimeout = null;
+    }, 100);
   }
 
-  #clickOutsideSubscription(): void {
-    if (!this.element() || !this.componentRef()) return;
+  #addClickOutsideListener(): (() => void) {
+    const element = this.element();
+    if (!element) return () => {};
 
-    const clickOutsideSubscription = this.#getClickOutsideObservable(
-      this.element(),
-    )
-      .pipe(
-        skipUntil(interval(100)),
-        filter(Boolean),
-        filter((target) => this.element().isEqualNode(target)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => {
+    const handleClick = (event: Event) => {
+      if (!element.contains(event.target as Node)) {
         this.close.emit();
+        this.#cleanupClickOutsideListener();
+      }
+    };
 
-        this.clickOutsideSubscription().unsubscribe();
-        this.clickOutsideSubscription.set(undefined);
-      });
+    document.addEventListener('click', handleClick, { capture: true });
+    
+    return () => {
+      document.removeEventListener('click', handleClick, { capture: true });
+    };
+  }
 
-    this.clickOutsideSubscription.set(clickOutsideSubscription);
+  #cleanupClickOutsideListener(): void {
+    if (this.clickOutsideListener) {
+      this.clickOutsideListener();
+      this.clickOutsideListener = null;
+    }
+    
+    if (this.clickOutsideTimeout !== null) {
+      clearTimeout(this.clickOutsideTimeout);
+      this.clickOutsideTimeout = null;
+    }
   }
 
   #subscribeToScroll(): void {
     if (!this.element()) return;
 
-    const parentScrollObservable =
-      this.scrollDispatcherService.getScrollContainerObservableForElement(
-        this.element(),
-      );
-
-    if (!parentScrollObservable?.length) return;
-
-    const [, scrollObservable] = parentScrollObservable;
-
-    if (scrollObservable) {
-      const scrollSubscription = scrollObservable.subscribe(() =>
-        this.#calculatePosition(this.position()),
-      );
-
-      this.scrollSubscription.set(scrollSubscription);
+    const scrollData = this.scrollDispatcherService.getScrollDataForElement(this.element());
+    
+    if (scrollData) {
+      effect(() => {
+        const latestScrollElement = this.scrollDispatcherService.latestScrollElement();
+        if (latestScrollElement === scrollData.element) {
+          this.#calculatePosition(this.position());
+        }
+      });
     }
   }
 
@@ -172,11 +164,8 @@ export class C3DropdownComponent<T> {
     this.left.set(rect.left);
     this.minWidth.set(rect.width);
 
-    const [scrollContainerElement] =
-      this.scrollDispatcherService.getScrollContainerObservableForElement(
-        element,
-      );
-    const scrollContainerRect = scrollContainerElement?.getBoundingClientRect();
+    const scrollData = this.scrollDispatcherService.getScrollDataForElement(element);
+    const scrollContainerRect = scrollData?.element?.getBoundingClientRect();
 
     // // Check if the element is out of the scroll container
     const isOutOfScroller = this.#isOutOfScroller(rect, scrollContainerRect);
@@ -253,5 +242,9 @@ export class C3DropdownComponent<T> {
       const diff = bottom - viewportHeight;
       return oldvalue + elementHeight + (diff > 0 ? diff + 5 : 5);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.#cleanupClickOutsideListener();
   }
 }

@@ -1,6 +1,5 @@
 import {
   Component,
-  OnInit,
   OnDestroy,
   signal,
   computed,
@@ -9,8 +8,8 @@ import {
   PLATFORM_ID,
   inject,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
@@ -20,18 +19,22 @@ selector: 'c3-text-rotator',
   styleUrls: ['./text-rotator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class C3TextRotatorComponent implements OnInit, OnDestroy {
+export class C3TextRotatorComponent implements OnDestroy {
   public textList = input<string[]>([
     'Bonjour',
     'Angular',
-    'RxJS',
+    'Signals',
     'Exemple',
     'Rotation',
-    'Signals',
+    'Zoneless',
   ]);
 
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
+  
   private currentIndexSignal = signal(0);
   private prevIndexSignal = signal(-1);
+  private intervalId: number | null = null;
 
   currentText: Signal<string> = computed(
     () => this.textList()[this.currentIndexSignal()]
@@ -42,23 +45,27 @@ export class C3TextRotatorComponent implements OnInit, OnDestroy {
     return prevIndex >= 0 ? this.textList()[prevIndex] : null;
   });
 
-  private subscription: Subscription | undefined;
-  private platformId = inject(PLATFORM_ID);
-
-  ngOnInit() {
+  constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      this.subscription = interval(3000).subscribe(() => {
-        this.prevIndexSignal.set(this.currentIndexSignal());
-        this.currentIndexSignal.update(
-          (currentIndex) => (currentIndex + 1) % this.textList().length
-        );
-      });
+      this.startRotation();
     }
+    
+    this.destroyRef.onDestroy(() => this.ngOnDestroy());
   }
 
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+  private startRotation(): void {
+    this.intervalId = window.setInterval(() => {
+      this.prevIndexSignal.set(this.currentIndexSignal());
+      this.currentIndexSignal.update(
+        (currentIndex) => (currentIndex + 1) % this.textList().length
+      );
+    }, 3000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
     }
   }
 }

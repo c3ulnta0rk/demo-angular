@@ -1,5 +1,5 @@
 
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, effect } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
@@ -44,14 +44,17 @@ export class DropdownExamplePageComponent {
 
       if (!mountedDropdown) return;
 
-      mountedDropdown.afterMounted.subscribe((ref) => {
-        ref.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
-        if (!this.dropdowns().has(items)) this.dropdowns().set(items, ref);
+      effect(() => {
+        const ref = mountedDropdown.afterMounted();
+        if (ref) {
+          ref.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
+          if (!this.dropdowns().has(items)) this.dropdowns().set(items, ref);
 
-        const closeSubscription = ref.close.subscribe(() => {
-          this.dropdowns().delete(items);
-          closeSubscription.unsubscribe();
-        });
+          const closeSubscription = ref.close.subscribe(() => {
+            this.dropdowns().delete(items);
+            closeSubscription.unsubscribe();
+          });
+        }
       });
     }
   }

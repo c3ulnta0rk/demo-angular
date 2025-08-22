@@ -1,49 +1,80 @@
-import { ElementRef, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, fromEvent } from 'rxjs';
+import { ElementRef, Injectable, signal, computed } from '@angular/core';
+
+export interface ScrollEvent {
+  element: Element;
+  scrollTop: number;
+  scrollLeft: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class ScrollDispatcherService {
-  private scrollSubject = new BehaviorSubject<Element | null>(null);
-  private scrollMap = new Map<Element, Observable<unknown>>();
-  private scrollSubscriptions: Map<Element, Subscription> = new Map();
+  private readonly scrollElements = signal<Map<Element, ScrollEvent>>(new Map());
+  private readonly scrollListeners = new Map<Element, () => void>();
 
-  public get scrollObservable(): Observable<Element> {
-    return this.scrollSubject.asObservable();
-  }
+  public readonly scrollSignal = computed(() => {
+    const elements = this.scrollElements();
+    return Array.from(elements.values());
+  });
 
-  public getScrollContainerObservableForElement(
-    element: HTMLElement
-  ): [Element, Observable<unknown>] {
+  public readonly latestScrollElement = signal<Element | null>(null);
+
+  public getScrollDataForElement(element: HTMLElement): ScrollEvent | null {
     const scrollContainerElement = element.closest('.c3-scrollable_container');
-    if (!scrollContainerElement) return [element, fromEvent(element, 'scroll')];
-
-    return [scrollContainerElement, this.scrollMap.get(scrollContainerElement)];
+    const targetElement = scrollContainerElement || element;
+    return this.scrollElements().get(targetElement) || null;
   }
 
-  attach(element: ElementRef<any>) {
-    if (this.scrollMap.has(element.nativeElement)) return;
+  attach(element: ElementRef<HTMLElement>): void {
+    if (this.scrollListeners.has(element.nativeElement)) return;
 
-    // add custom class to element
     element.nativeElement.classList.add('c3-scrollable_container');
-    const scrollEventObservable = fromEvent(element.nativeElement, 'scroll');
-    this.scrollMap.set(element.nativeElement, scrollEventObservable);
 
-    const scrollEventSubscription = scrollEventObservable.subscribe(() => {
-      this.scrollSubject.next(element.nativeElement);
+    const scrollListener = () => {
+      const scrollEvent: ScrollEvent = {
+        element: element.nativeElement,
+        scrollTop: element.nativeElement.scrollTop,
+        scrollLeft: element.nativeElement.scrollLeft
+      };
+
+      this.scrollElements.update(map => {
+        const newMap = new Map(map);
+        newMap.set(element.nativeElement, scrollEvent);
+        return newMap;
+      });
+
+      this.latestScrollElement.set(element.nativeElement);
+    };
+
+    element.nativeElement.addEventListener('scroll', scrollListener, { passive: true });
+    this.scrollListeners.set(element.nativeElement, () => {
+      element.nativeElement.removeEventListener('scroll', scrollListener);
     });
-    this.scrollSubscriptions.set(
-      element.nativeElement,
-      scrollEventSubscription
-    );
   }
 
-  detach(element: ElementRef<any>) {
-    const subscription = this.scrollSubscriptions.get(element.nativeElement);
-    if (subscription) {
-      subscription.unsubscribe();
-      this.scrollSubscriptions.delete(element.nativeElement);
+  detach(element: ElementRef<HTMLElement>): void {
+    const cleanup = this.scrollListeners.get(element.nativeElement);
+    if (cleanup) {
+      cleanup();
+      this.scrollListeners.delete(element.nativeElement);
     }
+
+    this.scrollElements.update(map => {
+      const newMap = new Map(map);
+      newMap.delete(element.nativeElement);
+      return newMap;
+    });
+
+    if (this.latestScrollElement() === element.nativeElement) {
+      this.latestScrollElement.set(null);
+    }
+  }
+
+  detachAll(): void {
+    this.scrollListeners.forEach(cleanup => cleanup());
+    this.scrollListeners.clear();
+    this.scrollElements.set(new Map());
+    this.latestScrollElement.set(null);
   }
 }
