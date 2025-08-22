@@ -8,15 +8,17 @@ import {
   input,
   PLATFORM_ID,
   inject,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
-  selector: 'c3-text-rotator',
+selector: 'c3-text-rotator',
   standalone: true,
   templateUrl: './text-rotator.component.html',
   styleUrls: ['./text-rotator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class C3TextRotatorComponent implements OnInit, OnDestroy {
   public textList = input<string[]>([

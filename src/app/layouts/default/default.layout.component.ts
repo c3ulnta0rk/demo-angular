@@ -1,15 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, Route, Router, RouterModule } from '@angular/router';
 
 import { ToolbarComponent } from '../../components/toolbar/toolbar.component';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'app-default-layout',
+selector: 'app-default-layout',
   standalone: true,
   imports: [RouterModule, ToolbarComponent],
   templateUrl: './default.layout.component.html',
-  styleUrl: './default.layout.component.scss'
+  styleUrl: './default.layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DefaultLayoutComponent {
   private router = inject(Router);

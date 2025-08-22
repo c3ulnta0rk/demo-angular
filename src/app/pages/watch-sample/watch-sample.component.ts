@@ -1,14 +1,15 @@
 
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { c3Watch } from '../../utils/watch';
 import { SnackbarService } from '../../modules/snackbar/snackbar.service';
 import { SnackbarModule } from '../../modules/snackbar/snackbar.module';
 
 @Component({
-    selector: 'c3-watch-sample',
+selector: 'c3-watch-sample',
     imports: [SnackbarModule],
     templateUrl: './watch-sample.component.html',
-    styleUrl: './watch-sample.component.scss'
+    styleUrl: './watch-sample.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WatchSampleComponent {
   public readonly counter = signal(0);

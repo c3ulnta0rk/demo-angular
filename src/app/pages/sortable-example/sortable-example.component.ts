@@ -1,14 +1,15 @@
 
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { SortableListModule } from '../../modules/sortableList/sortable-list.module';
 
 @Component({
-  selector: 'app-sortable-example',
+selector: 'app-sortable-example',
   templateUrl: './sortable-example.component.html',
   styleUrls: ['./sortable-example.component.scss'],
   standalone: true,
-  imports: [SortableListModule]
+  imports: [SortableListModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SortableExampleComponent {
   public readonly items = signal([

@@ -1,12 +1,13 @@
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { C3MenuCoulantModule } from '../../components/menu-coulant/menu-coulant.module';
 
 @Component({
-    selector: 'menu-coulant',
+selector: 'menu-coulant',
     imports: [C3CardComponent, C3MenuCoulantModule],
     templateUrl: './menu-coulant.component.html',
-    styleUrl: './menu-coulant.component.scss'
+    styleUrl: './menu-coulant.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuCoulantPage {}

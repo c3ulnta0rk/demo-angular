@@ -1,10 +1,11 @@
-import { Component, effect, ElementRef, inject, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-    selector: 'c3-option',
+selector: 'c3-option',
     templateUrl: './option.component.html',
     styleUrl: './option.component.scss',
-    standalone: false
+    standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class C3OptionComponent {
   public readonly selected = signal(false);

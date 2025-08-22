@@ -1,5 +1,5 @@
 
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { C3AutocompleteModule } from '../../modules/autocomplete/autocomplete.module';
 
 const countries = [
@@ -87,10 +87,11 @@ const countries = [
 ];
 
 @Component({
-    selector: 'c3-auto-scroll',
+selector: 'c3-auto-scroll',
     imports: [C3AutocompleteModule],
     templateUrl: './auto-scroll.component.html',
-    styleUrl: './auto-scroll.component.scss'
+    styleUrl: './auto-scroll.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AutoScrollComponent {
   public readonly items = signal(

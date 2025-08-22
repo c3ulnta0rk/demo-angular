@@ -1,5 +1,5 @@
 
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
@@ -10,7 +10,7 @@ import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
 import { C3DropdownComponent } from '../../modules/dropdown/dropdown-component/dropdown.component';
 
 @Component({
-  selector: 'c3-dropdown-example',
+selector: 'c3-dropdown-example',
   imports: [
     C3CardComponent,
     C3DropdownModule,
@@ -20,6 +20,7 @@ import { C3DropdownComponent } from '../../modules/dropdown/dropdown-component/d
 ],
   templateUrl: './dropdown-example.component.html',
   styleUrl: './dropdown-example.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DropdownExamplePageComponent {
   private readonly _dropdown = inject(C3DropdownService);

@@ -4,14 +4,16 @@ import {
   TemplateRef,
   viewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 
 @Component({
-    selector: 'c3-template-ref',
+selector: 'c3-template-ref',
     imports: [C3CardComponent],
     templateUrl: './template-ref.component.html',
-    styleUrl: './template-ref.component.scss'
+    styleUrl: './template-ref.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplateRefComponent {
   private readonly ref = viewChild('ref', {

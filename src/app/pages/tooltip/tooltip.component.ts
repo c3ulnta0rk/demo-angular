@@ -1,11 +1,12 @@
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { C3TooltipDirective } from '../../directives/c3Tooltip.directive';
 
 @Component({
-    selector: 'c3-tooltip',
+selector: 'c3-tooltip',
     imports: [C3TooltipDirective],
     templateUrl: './tooltip.component.html',
-    styleUrl: './tooltip.component.scss'
+    styleUrl: './tooltip.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TooltipComponent {}

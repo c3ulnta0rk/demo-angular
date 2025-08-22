@@ -7,6 +7,7 @@ import {
   signal,
   TemplateRef,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { C3OptionComponent } from '../option/option.component';
 import { C3DropdownService } from '../../dropdown/dropdown.service';
@@ -14,10 +15,11 @@ import { c3Watch } from '../../../utils/watch';
 import { C3DropdownComponent } from '../../dropdown/dropdown-component/dropdown.component';
 
 @Component({
-  selector: 'c3-autocomplete',
+selector: 'c3-autocomplete',
   templateUrl: './autocomplete.component.html',
   styleUrl: './autocomplete.component.scss',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class C3AutocompleteComponent {
   public readonly templateRef = viewChild(TemplateRef);

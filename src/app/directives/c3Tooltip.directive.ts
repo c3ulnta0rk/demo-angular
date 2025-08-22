@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, input, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, inject, input, Renderer2, ChangeDetectorRef } from '@angular/core';
 import { fromEvent, timer } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 
@@ -21,6 +21,7 @@ export class C3TooltipDirective {
   });
   private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
+  private readonly cdr = inject(ChangeDetectorRef);
   private tooltipElement: HTMLElement | null = null;
   private readonly destroy$ = fromEvent(
     this.elementRef.nativeElement,
@@ -30,11 +31,17 @@ export class C3TooltipDirective {
   constructor() {
     fromEvent(this.elementRef.nativeElement, 'mouseenter')
       .pipe(debounceTime(300), takeUntil(this.destroy$))
-      .subscribe(() => this.showTooltip());
+      .subscribe(() => {
+        this.showTooltip();
+        this.cdr.markForCheck();
+      });
 
     fromEvent(this.elementRef.nativeElement, 'mouseleave')
       .pipe(debounceTime(300), takeUntil(this.destroy$))
-      .subscribe(() => this.hideTooltip());
+      .subscribe(() => {
+        this.hideTooltip();
+        this.cdr.markForCheck();
+      });
   }
 
   private showTooltip() {

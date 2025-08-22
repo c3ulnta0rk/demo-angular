@@ -13,6 +13,7 @@ import {
   Type,
   viewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {
   filter,
@@ -26,10 +27,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScrollDispatcherService } from '../../scrollDispatcher/scrollDispatcher.service';
 
 @Component({
-  selector: 'c3-dropdown',
+selector: 'c3-dropdown',
   standalone: false,
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class C3DropdownComponent<T> {
   public readonly element = input<HTMLElement | undefined>();

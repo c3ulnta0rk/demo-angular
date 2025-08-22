@@ -1,10 +1,11 @@
-import { Component, signal, TemplateRef, viewChild } from '@angular/core';
+import { Component, signal, TemplateRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-    selector: 'c3-menu-coulant-menu',
+selector: 'c3-menu-coulant-menu',
     templateUrl: './menu-coulant-menu.component.html',
     styleUrl: './menu-coulant-menu.component.scss',
-    standalone: false
+    standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class C3MenuCoulantMenu {
   public readonly menuTpl = viewChild('menuTpl', {

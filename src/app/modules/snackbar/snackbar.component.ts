@@ -7,14 +7,16 @@ import {
   TemplateRef,
   viewChild,
   ViewContainerRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { c3Watch } from '../../utils/watch';
 
 @Component({
-    selector: 'c3-snackbar',
+selector: 'c3-snackbar',
     imports: [],
     templateUrl: './snackbar.component.html',
-    styleUrl: './snackbar.component.scss'
+    styleUrl: './snackbar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SnackbarComponent {
   public readonly message = input('Hello, Snackbar!');
