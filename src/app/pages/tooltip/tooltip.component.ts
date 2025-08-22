@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { C3TooltipDirective } from '../../directives/c3Tooltip.directive';
 

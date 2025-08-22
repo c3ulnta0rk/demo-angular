@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, signal } from '@angular/core';
 import translateXAnimation from './animations/translateX.animation';
 import { C3CardComponent } from '../../components/card/card.component';
 
 @Component({
     selector: 'c3-animation-example',
-    imports: [CommonModule, C3CardComponent],
+    imports: [C3CardComponent],
     templateUrl: './animation-example.component.html',
     styleUrl: './animation-example.component.scss',
     animations: [translateXAnimation]

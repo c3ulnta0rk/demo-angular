@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'c3-component-input',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './component-input.component.html',
     styleUrl: './component-input.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

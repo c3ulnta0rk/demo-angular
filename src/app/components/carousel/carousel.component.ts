@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,10 +15,9 @@ import { C3OnDragDirective } from '../../directives/onDrag.directive';
 @Component({
     selector: 'c3-carousel',
     imports: [
-        CommonModule,
-        AttachScrollDirective,
-        C3OnDragDirective,
-    ],
+    AttachScrollDirective,
+    C3OnDragDirective
+],
     templateUrl: './carousel.component.html',
     styleUrl: './carousel.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

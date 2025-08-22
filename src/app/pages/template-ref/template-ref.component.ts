@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   TemplateRef,
@@ -9,7 +9,7 @@ import { C3CardComponent } from '../../components/card/card.component';
 
 @Component({
     selector: 'c3-template-ref',
-    imports: [CommonModule, C3CardComponent],
+    imports: [C3CardComponent],
     templateUrl: './template-ref.component.html',
     styleUrl: './template-ref.component.scss'
 })

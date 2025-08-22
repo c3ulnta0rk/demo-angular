@@ -1,6 +1,6 @@
 
 import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { SortableListModule } from '../../modules/sortableList/sortable-list.module';
 
 @Component({
@@ -8,7 +8,7 @@ import { SortableListModule } from '../../modules/sortableList/sortable-list.mod
   templateUrl: './sortable-example.component.html',
   styleUrls: ['./sortable-example.component.scss'],
   standalone: true,
-  imports: [CommonModule, SortableListModule]
+  imports: [SortableListModule]
 })
 export class SortableExampleComponent {
   public readonly items = signal([

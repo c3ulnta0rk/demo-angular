@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, signal } from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
@@ -16,9 +16,8 @@ import { C3DropdownComponent } from '../../modules/dropdown/dropdown-component/d
     C3DropdownModule,
     C3OnScrollEndDirective,
     CarouselComponent,
-    CarouselItemDirective,
-    CommonModule,
-  ],
+    CarouselItemDirective
+],
   templateUrl: './dropdown-example.component.html',
   styleUrl: './dropdown-example.component.scss',
 })

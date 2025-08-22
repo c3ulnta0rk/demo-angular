@@ -3,9 +3,11 @@
     <div draggable>Drag me</div>
   </div>
   <div class="drop-zone">
-    <div class="drop-target-container" *ngFor="let i of dropZones">
-      <div class="drop-target-label">Drop here {{ i }}</div>
-      <div dropzone class="drop-target"></div>
-    </div>
+    @for (i of dropZones; track i) {
+      <div class="drop-target-container">
+        <div class="drop-target-label">Drop here {{ i }}</div>
+        <div dropzone class="drop-target"></div>
+      </div>
+    }
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, signal } from '@angular/core';
 import { C3AutocompleteModule } from '../../modules/autocomplete/autocomplete.module';
 
@@ -88,7 +88,7 @@ const countries = [
 
 @Component({
     selector: 'c3-auto-scroll',
-    imports: [CommonModule, C3AutocompleteModule],
+    imports: [C3AutocompleteModule],
     templateUrl: './auto-scroll.component.html',
     styleUrl: './auto-scroll.component.scss'
 })

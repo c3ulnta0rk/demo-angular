@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DragDropModule } from '../../modules/dragDrop/drag-drop.module';
 
 @Component({
     selector: 'app-drag-drop-example',
-    imports: [CommonModule, DragDropModule],
+    imports: [DragDropModule],
     templateUrl: './drag-drop-example.component.html',
     styleUrls: ['./drag-drop-example.component.scss']
 })

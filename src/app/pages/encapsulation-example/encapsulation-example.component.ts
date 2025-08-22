@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,7 +8,7 @@ import { C3InputComponent } from '../../components/component-input/component-inp
 
 @Component({
     selector: 'c3-encapsulation-example',
-    imports: [CommonModule, C3InputComponent],
+    imports: [C3InputComponent],
     templateUrl: './encapsulation-example.component.html',
     styleUrl: './encapsulation-example.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

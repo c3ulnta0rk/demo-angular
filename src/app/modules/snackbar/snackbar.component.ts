@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   ComponentRef,
@@ -12,7 +12,7 @@ import { c3Watch } from '../../utils/watch';
 
 @Component({
     selector: 'c3-snackbar',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './snackbar.component.html',
     styleUrl: './snackbar.component.scss'
 })
