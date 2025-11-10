@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, effect, ElementRef, inject, signal, ChangeDetectionStrategy, Input } from '@angular/core';
 
 @Component({
 selector: 'c3-option',
@@ -8,27 +8,43 @@ selector: 'c3-option',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class C3OptionComponent {
+  @Input() optionId?: string;
   public readonly selected = signal(false);
   private readonly elementRef = inject(ElementRef);
+  private static counter = 0;
 
   constructor() {
     effect(
       () => {
+        const element = this.elementRef.nativeElement;
         if (this.selected()) {
-          if (this.elementRef.nativeElement.scrollIntoView)
-            this.elementRef.nativeElement.scrollIntoView({
+          if (element.scrollIntoView) {
+            element.scrollIntoView({
               block: 'nearest',
               inline: 'nearest',
             });
-          this.elementRef.nativeElement.classList.add('selected');
+          }
+          element.classList.add('selected');
+          element.setAttribute('aria-selected', 'true');
+          element.setAttribute('tabindex', '0');
         } else {
-          this.elementRef.nativeElement.classList.remove('selected');
+          element.classList.remove('selected');
+          element.setAttribute('aria-selected', 'false');
+          element.setAttribute('tabindex', '-1');
         }
       },
       {
         allowSignalWrites: true,
       }
     );
+    
+    // Initialize accessibility attributes
+    const element = this.elementRef.nativeElement;
+    const id = this.optionId || `c3-option-${C3OptionComponent.counter++}`;
+    element.setAttribute('id', id);
+    element.setAttribute('role', 'option');
+    element.setAttribute('aria-selected', 'false');
+    element.setAttribute('tabindex', '-1');
   }
 
   public select() {

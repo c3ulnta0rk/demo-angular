@@ -76,13 +76,31 @@
 
 .toggle-btn {
   margin-bottom: 1rem;
-  padding: 0.5rem;
-  background: transparent;
-  border: none;
+  padding: var(--spacing-sm);
+  background-color: var(--surface-variant);
+  color: var(--text-primary);
+  border: 1px solid var(--outline);
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
-    background: #eee;
-    border-radius: 4px;
+    background-color: var(--primary-50);
+    border-color: var(--primary-300);
+    color: var(--primary-700);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-2);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-1);
   }
 }

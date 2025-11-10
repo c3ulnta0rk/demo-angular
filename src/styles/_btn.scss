@@ -1,13 +1,141 @@
-@tailwind base;
-@tailwind utilities;
 
 @mixin btn-base() {
-  button:not([class~="no-style"]),
-  a:not([class~="no-style"]) {
-    @apply bg-blue-700 text-white font-bold py-2 px-4 rounded shadow shadow-blue-700 text-[15px] active:scale-95;
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    box-shadow: var(--shadow-2);
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-3);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: var(--shadow-1);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    }
+  }
+
+  .btn-secondary {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 2px solid var(--outline);
+    
+    &:hover:not(:disabled) {
+      border-color: var(--primary-300);
+      background-color: var(--primary-50);
+    }
+  }
+
+  .btn-accent {
+    background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
+    }
+  }
+
+  .btn-success {
+    background-color: var(--success-color);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+  }
+
+  .btn-warning {
+    background-color: var(--warning-color);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: #e68900;
+    }
+  }
+
+  .btn-error {
+    background-color: var(--error-color);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: #d32f2f;
+    }
+  }
+
+  .btn-small {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .btn-large {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-lg);
   }
 
   .btn-icon {
-    @apply bg-teal-700 text-white font-bold py-2 px-4 rounded shadow shadow-teal-700 text-[15px] active:scale-95 text-center;
+    @extend .btn;
+    @extend .btn-primary;
+    aspect-ratio: 1;
+    padding: var(--spacing-sm);
+    
+    &.btn-icon-small {
+      padding: var(--spacing-xs);
+    }
+    
+    &.btn-icon-large {
+      padding: var(--spacing-md);
+    }
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--primary-600);
+    border: none;
+    box-shadow: none;
+    
+    &:hover:not(:disabled) {
+      background-color: var(--primary-50);
+      color: var(--primary-700);
+      box-shadow: none;
+    }
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: var(--primary-600);
+    border: 2px solid var(--primary-300);
+    
+    &:hover:not(:disabled) {
+      background-color: var(--primary-600);
+      color: white;
+      border-color: var(--primary-600);
+    }
   }
 }

@@ -1,7 +1,7 @@
 
 <div class="layout-container">
   <aside class="sidebar" [class.collapsed]="isCollapsed()">
-    <button class="toggle-btn" (click)="toggleSidebar()">
+    <button class="toggle-btn no-style" (click)="toggleSidebar()" [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
       {{ isCollapsed() ? '→' : '←' }}
     </button>
     <nav>

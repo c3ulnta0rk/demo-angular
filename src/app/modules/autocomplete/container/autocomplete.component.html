@@ -1,5 +1,9 @@
 <ng-template>
-  <div class="autocomplete-container">
+  <div class="autocomplete-container" 
+       role="listbox" 
+       [attr.aria-label]="'Search results'"
+       [attr.aria-expanded]="isOpen()"
+       [attr.aria-activedescendant]="focusedItem()?.item ? 'option-' + focusedItem()?.position : null">
     <ng-content></ng-content>
   </div>
 </ng-template>

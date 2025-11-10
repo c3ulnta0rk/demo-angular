@@ -1,20 +1,57 @@
-@tailwind base;
-@tailwind utilities;
 
 @mixin scrollbar() {
-  ::-webkit-scrollbar {
-    @apply w-2;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-teal-800 rounded-full;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-teal-600 rounded-full;
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-300) transparent;
   }
 
-  @-moz-document url-prefix() {
-    * {
-      scrollbar-color: #4a5568 #2d3748;
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: var(--border-radius-sm);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary-300);
+    border-radius: var(--border-radius-sm);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    
+    &:hover {
+      background: var(--primary-400);
+      background-clip: content-box;
+    }
+    
+    &:active {
+      background: var(--primary-500);
+      background-clip: content-box;
+    }
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  // Custom scrollbar for specific containers
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 }
