@@ -1,10 +1,10 @@
-
 .layout-container {
   display: grid;
   grid-template-areas:
     "sidebar toolbar"
     "sidebar main";
   grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
   height: 100vh;
 }
 
@@ -16,13 +16,16 @@
   transition: width 0.3s ease;
   width: 250px;
   color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   &.collapsed {
     width: 60px;
-    
+
     ul {
       align-items: center;
-      
+
       a {
         width: 40px;
         overflow: hidden;
@@ -31,27 +34,34 @@
     }
   }
 
-  nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
 
-    a {
-      color: inherit;
-      text-decoration: none;
-      padding: 0.5rem;
-      border-radius: 4px;
-      display: block;
-      
-      &:hover {
-        background: var(--link-hover-bg);
-      }
-      
-      &.active {
-        background: var(--link-active-bg);
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        padding: 0.5rem;
+        border-radius: 4px;
+        display: block;
+
+        &:hover {
+          background: var(--link-hover-bg);
+        }
+
+        &.active {
+          background: var(--link-active-bg);
+        }
       }
     }
   }
@@ -90,7 +100,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   &:hover {
     background-color: var(--primary-50);
     border-color: var(--primary-300);
@@ -98,7 +108,7 @@
     transform: translateY(-1px);
     box-shadow: var(--shadow-2);
   }
-  
+
   &:active {
     transform: translateY(0);
     box-shadow: var(--shadow-1);

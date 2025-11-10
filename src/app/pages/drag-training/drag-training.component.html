@@ -1,0 +1,33 @@
+<div c3DragContainer class="h-full w-full relative bg-gray-200 rounded-md">
+  <!-- Draggable item using the new directive system -->
+  <div
+    c3DragItem
+    [c3DragItemId]="'item-1'"
+    [c3DragItemInitialX]="0"
+    [c3DragItemInitialY]="0"
+    class="h-[100px] w-[100px] bg-red-500 rounded-md cursor-move flex items-center justify-center text-white font-semibold"
+  >
+    Drag me
+  </div>
+
+  <!-- You can add more items easily -->
+  <div
+    c3DragItem
+    [c3DragItemId]="'item-2'"
+    [c3DragItemInitialX]="120"
+    [c3DragItemInitialY]="120"
+    class="h-[80px] w-[80px] bg-blue-500 rounded-md cursor-move flex items-center justify-center text-white font-semibold"
+  >
+    Item 2
+  </div>
+
+  <div
+    c3DragItem
+    [c3DragItemId]="'item-3'"
+    [c3DragItemInitialX]="220"
+    [c3DragItemInitialY]="220"
+    class="h-[60px] w-[60px] bg-green-500 rounded-md cursor-move flex items-center justify-center text-white font-semibold text-xs"
+  >
+    Item 3
+  </div>
+</div>

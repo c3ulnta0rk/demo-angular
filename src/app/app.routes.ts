@@ -15,6 +15,7 @@ import { OverlayExampleComponent } from './pages/overlay-example/overlay-example
 import { DropdownExamplePageComponent } from './pages/dropdown-example/dropdown-example.component';
 import { CarouselExampleComponent } from './pages/carousel-example/carousel-example.component';
 import { SortableExampleComponent } from './pages/sortable-example/sortable-example.component';
+import { DragTrainingComponent } from './pages/drag-training/drag-training.component';
 
 export const routes: Routes = [
   {
@@ -124,6 +125,13 @@ export const routes: Routes = [
         component: SortableExampleComponent,
         data: {
           title: 'Liste triable',
+        },
+      },
+      {
+        path: 'drag-training',
+        component: DragTrainingComponent,
+        data: {
+          title: 'Drag Training',
         },
       },
       { path: '**', redirectTo: '/home' },
