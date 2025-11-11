@@ -15,11 +15,11 @@ import { c3Watch } from '../../../utils/watch';
 import { C3DropdownComponent } from '../../dropdown/dropdown-component/dropdown.component';
 
 @Component({
-selector: 'c3-autocomplete',
+  selector: 'c3-autocomplete',
   templateUrl: './autocomplete.component.html',
   styleUrl: './autocomplete.component.scss',
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class C3AutocompleteComponent {
   public readonly templateRef = viewChild(TemplateRef);
@@ -42,9 +42,7 @@ export class C3AutocompleteComponent {
   private readonly _injector = inject(Injector);
 
   constructor() {
-    effect(() => this.focusedItem()?.item && this.focusedItem().item.select(), {
-      allowSignalWrites: true,
-    });
+    effect(() => this.focusedItem()?.item && this.focusedItem().item.select());
 
     c3Watch(
       this.items,
@@ -56,9 +54,8 @@ export class C3AutocompleteComponent {
           item: items[0],
         }),
       {
-        allowSignalWrites: true,
         immediate: true,
-      },
+      }
     );
   }
 

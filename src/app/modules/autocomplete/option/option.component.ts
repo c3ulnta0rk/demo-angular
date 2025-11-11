@@ -1,11 +1,19 @@
-import { Component, effect, ElementRef, inject, signal, ChangeDetectionStrategy, Input } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+  Input,
+} from '@angular/core';
 
 @Component({
-selector: 'c3-option',
-    templateUrl: './option.component.html',
-    styleUrl: './option.component.scss',
-    standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'c3-option',
+  templateUrl: './option.component.html',
+  styleUrl: './option.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class C3OptionComponent {
   @Input() optionId?: string;
@@ -14,30 +22,25 @@ export class C3OptionComponent {
   private static counter = 0;
 
   constructor() {
-    effect(
-      () => {
-        const element = this.elementRef.nativeElement;
-        if (this.selected()) {
-          if (element.scrollIntoView) {
-            element.scrollIntoView({
-              block: 'nearest',
-              inline: 'nearest',
-            });
-          }
-          element.classList.add('selected');
-          element.setAttribute('aria-selected', 'true');
-          element.setAttribute('tabindex', '0');
-        } else {
-          element.classList.remove('selected');
-          element.setAttribute('aria-selected', 'false');
-          element.setAttribute('tabindex', '-1');
+    effect(() => {
+      const element = this.elementRef.nativeElement;
+      if (this.selected()) {
+        if (element.scrollIntoView) {
+          element.scrollIntoView({
+            block: 'nearest',
+            inline: 'nearest',
+          });
         }
-      },
-      {
-        allowSignalWrites: true,
+        element.classList.add('selected');
+        element.setAttribute('aria-selected', 'true');
+        element.setAttribute('tabindex', '0');
+      } else {
+        element.classList.remove('selected');
+        element.setAttribute('aria-selected', 'false');
+        element.setAttribute('tabindex', '-1');
       }
-    );
-    
+    });
+
     // Initialize accessibility attributes
     const element = this.elementRef.nativeElement;
     const id = this.optionId || `c3-option-${C3OptionComponent.counter++}`;

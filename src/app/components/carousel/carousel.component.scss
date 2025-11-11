@@ -3,7 +3,147 @@
 .c3-carousel {
   @apply block relative;
 
+  // Focus outline for keyboard navigation
+  &:focus-visible {
+    @apply outline-2 outline-blue-500 outline-offset-2;
+  }
+
   .scroller {
     @apply flex flex-row overflow-hidden gap-6 m-8 p-4;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; // iOS momentum scrolling
+
+    // Scroll snap support
+    &.snap-enabled {
+      scroll-snap-type: x mandatory;
+
+      > * {
+        scroll-snap-stop: always;
+      }
+
+      &.snap-start > * {
+        scroll-snap-align: start;
+      }
+
+      &.snap-center > * {
+        scroll-snap-align: center;
+      }
+
+      &.snap-end > * {
+        scroll-snap-align: end;
+      }
+    }
+  }
+
+  // Navigation buttons
+  .carousel-btn {
+    @apply w-10 h-10 flex items-center justify-center;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500;
+    @apply disabled:pointer-events-none;
+    transition: opacity 0.2s ease-in-out, transform 0.1s ease-in-out;
+
+    &:not(:disabled):hover {
+      @apply transform scale-110;
+    }
+
+    &:not(:disabled):active {
+      @apply transform scale-95;
+    }
+
+    &:focus-visible {
+      @apply ring-2 ring-blue-500 ring-offset-2;
+    }
+  }
+
+  // Position indicators (dots)
+  .carousel-dots {
+    @apply absolute bottom-4 left-1/2 transform -translate-x-1/2;
+    @apply flex gap-2 items-center justify-center;
+    @apply z-10;
+  }
+
+  .carousel-dot {
+    @apply w-2 h-2 rounded-full bg-gray-400;
+    @apply transition-all duration-200 ease-in-out;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2;
+    @apply hover:bg-gray-300 cursor-pointer;
+
+    &.active {
+      @apply w-8 bg-blue-500;
+    }
+
+    &:hover:not(.active) {
+      @apply scale-125;
+    }
+  }
+
+  // Auto-play controls
+  .carousel-autoplay {
+    @apply absolute top-4 right-4 z-20;
+    @apply flex flex-col items-end gap-2;
+  }
+
+  .carousel-autoplay-btn {
+    @apply w-10 h-10 rounded-full bg-gray-800/80 text-white;
+    @apply flex items-center justify-center;
+    @apply hover:bg-gray-700 transition-colors duration-200;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500;
+  }
+
+  .carousel-progress-bar {
+    @apply w-32 h-1 bg-gray-300/50 rounded-full overflow-hidden;
+  }
+
+  .carousel-progress-fill {
+    @apply h-full bg-blue-500 transition-all duration-100 ease-linear;
+  }
+
+  // Screen reader only content
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  // Responsive styles
+  &.mobile {
+    .scroller {
+      @apply gap-4 m-4 p-2;
+      // Enhanced touch targets on mobile
+      touch-action: pan-x;
+    }
+
+    .carousel-btn {
+      @apply w-8 h-8 text-sm;
+    }
+
+    .carousel-dots {
+      @apply bottom-2;
+    }
+
+    .carousel-dot {
+      @apply w-1.5 h-1.5;
+
+      &.active {
+        @apply w-6;
+      }
+    }
+  }
+
+  &.tablet {
+    .scroller {
+      @apply gap-5 m-6 p-3;
+    }
+
+    .carousel-btn {
+      @apply w-9 h-9;
+    }
+  }
+
+  &.desktop {
+    .scroller {
+      @apply gap-6 m-8 p-4;
+    }
   }
 }

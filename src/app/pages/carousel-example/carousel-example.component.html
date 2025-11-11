@@ -1,11 +1,87 @@
 
 <section>
-  <h4>Simple Carousel Example</h4>
-  <c3-carousel>
-    @for (item of items; track item) {
-      <c3-card c3CarouselItem>
-        <p>Item {{ item }}</p>
-      </c3-card>
-    }
-  </c3-carousel>
+  <h2>Carousel Examples</h2>
+
+  <div class="example-section">
+    <h3>1. Default Carousel (with all features)</h3>
+    <p class="description">Full-featured carousel with dots, buttons, snap alignment, drag & inertia</p>
+    <c3-carousel
+      (indexChanged)="onIndexChanged($event)"
+      (slideStart)="onSlideStart($event)"
+      (slideEnd)="onSlideEnd($event)">
+      @for (item of items; track item) {
+        <c3-card c3CarouselItem>
+          <p>Item {{ item }}</p>
+        </c3-card>
+      }
+    </c3-carousel>
+    <p class="info">Current index: {{ currentIndex() }}</p>
+  </div>
+
+  <div class="example-section">
+    <h3>2. Minimal Carousel (no dots, no buttons)</h3>
+    <p class="description">Keyboard & drag navigation only</p>
+    <c3-carousel [showDots]="false" [showButtons]="false">
+      @for (item of items; track item) {
+        <c3-card c3CarouselItem>
+          <p>Item {{ item }}</p>
+        </c3-card>
+      }
+    </c3-carousel>
+  </div>
+
+  <div class="example-section">
+    <h3>3. No Drag Carousel</h3>
+    <p class="description">Only button & dot navigation</p>
+    <c3-carousel [dragEnabled]="false" snapAlign="center">
+      @for (item of items; track item) {
+        <c3-card c3CarouselItem>
+          <p>Item {{ item }}</p>
+        </c3-card>
+      }
+    </c3-carousel>
+  </div>
+
+  <div class="example-section">
+    <h3>4. Instant Scroll (no smooth)</h3>
+    <p class="description">Auto scroll behavior instead of smooth</p>
+    <c3-carousel scrollBehavior="auto" [enableSnap]="false">
+      @for (item of items; track item) {
+        <c3-card c3CarouselItem>
+          <p>Item {{ item }}</p>
+        </c3-card>
+      }
+    </c3-carousel>
+  </div>
+
+  <div class="example-section">
+    <h3>5. Auto-Play Carousel</h3>
+    <p class="description">Auto-play with pause on hover/focus and progress indicator</p>
+    <c3-carousel
+      [autoPlay]="true"
+      [interval]="2000"
+      [pauseOnHover]="true"
+      [pauseOnFocus]="true">
+      @for (item of items; track item) {
+        <c3-card c3CarouselItem>
+          <p>Item {{ item }}</p>
+        </c3-card>
+      }
+    </c3-carousel>
+  </div>
+
+  <div class="example-section">
+    <h3>6. Mobile-Optimized Carousel</h3>
+    <p class="description">Hidden buttons on mobile, touch-only navigation</p>
+    <c3-carousel
+      [hideButtonsOnMobile]="true"
+      [hideDotsOnMobile]="false">
+      @for (item of items; track item) {
+        <c3-card c3CarouselItem>
+          <p>Item {{ item }}</p>
+        </c3-card>
+      }
+    </c3-carousel>
+    <p class="info">Resize your browser to see responsive behavior (breakpoints: 768px, 1024px)</p>
+  </div>
 </section>

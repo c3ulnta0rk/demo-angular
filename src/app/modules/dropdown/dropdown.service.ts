@@ -47,9 +47,11 @@ export class C3DropdownService {
   >();
   private readonly _injector = inject(Injector);
 
-  public open<MountedComponent>(config: C3DropdownConfig<MountedComponent>): DropdownReference<MountedComponent> {
+  public open<MountedComponent>(
+    config: C3DropdownConfig<MountedComponent>
+  ): DropdownReference<MountedComponent> {
     const dropdown = this._c3Injector.injectComponent(
-      C3DropdownComponent<MountedComponent>,
+      C3DropdownComponent<MountedComponent>
     );
     if (!dropdown) throw new Error('Could not create dropdown component');
 
@@ -57,7 +59,8 @@ export class C3DropdownService {
 
     c3ApplyInputValues(C3DropdownComponent, config, dropdown);
 
-    const afterMountedSignal = signal<C3DropdownComponent<MountedComponent> | null>(null);
+    const afterMountedSignal =
+      signal<C3DropdownComponent<MountedComponent> | null>(null);
     let closeUnsubscriber: (() => void) | null = null;
 
     const closeSubscription = dropdown.instance.close.subscribe(() => {
@@ -78,8 +81,7 @@ export class C3DropdownService {
       },
       {
         injector: this._injector,
-        allowSignalWrites: true,
-      },
+      }
     );
 
     return {
@@ -94,7 +96,7 @@ export class C3DropdownService {
   }
 
   public close(
-    componentRef: ComponentRef<any> | C3DropdownComponent<any>,
+    componentRef: ComponentRef<any> | C3DropdownComponent<any>
   ): void {
     if (componentRef instanceof C3DropdownComponent) {
       const mountedDropdown = this._mountedDropdowns.get(componentRef);

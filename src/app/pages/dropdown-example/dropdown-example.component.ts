@@ -1,5 +1,11 @@
-
-import { Component, inject, signal, ChangeDetectionStrategy, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+  effect,
+  Injector,
+} from '@angular/core';
 import { C3CardComponent } from '../../components/card/card.component';
 import { CarouselItemDirective } from '../../components/carousel/carousel-item.directive';
 import { CarouselComponent } from '../../components/carousel/carousel.component';
@@ -10,23 +16,24 @@ import { C3DropdownModule } from '../../modules/dropdown/dropdown.module';
 import { C3DropdownComponent } from '../../modules/dropdown/dropdown-component/dropdown.component';
 
 @Component({
-selector: 'c3-dropdown-example',
+  selector: 'c3-dropdown-example',
   imports: [
     C3CardComponent,
     C3DropdownModule,
     C3OnScrollEndDirective,
     CarouselComponent,
-    CarouselItemDirective
-],
+    CarouselItemDirective,
+  ],
   templateUrl: './dropdown-example.component.html',
   styleUrl: './dropdown-example.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownExamplePageComponent {
   private readonly _dropdown = inject(C3DropdownService);
+  private readonly _injector = inject(Injector);
   public readonly items = Array.from({ length: 178 }, (_, i) => i + 1);
   private readonly dropdowns = signal(
-    new Map<number, C3DropdownComponent<SampleComponent>>(),
+    new Map<number, C3DropdownComponent<SampleComponent>>()
   );
 
   openDropdown($event: MouseEvent, items: number): void {
@@ -44,18 +51,23 @@ export class DropdownExamplePageComponent {
 
       if (!mountedDropdown) return;
 
-      effect(() => {
-        const ref = mountedDropdown.afterMounted();
-        if (ref) {
-          ref.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
-          if (!this.dropdowns().has(items)) this.dropdowns().set(items, ref);
+      effect(
+        () => {
+          const ref = mountedDropdown.afterMounted();
+          if (ref) {
+            ref.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
+            if (!this.dropdowns().has(items)) this.dropdowns().set(items, ref);
 
-          const closeSubscription = ref.close.subscribe(() => {
-            this.dropdowns().delete(items);
-            closeSubscription.unsubscribe();
-          });
+            const closeSubscription = ref.close.subscribe(() => {
+              this.dropdowns().delete(items);
+              closeSubscription.unsubscribe();
+            });
+          }
+        },
+        {
+          injector: this._injector,
         }
-      });
+      );
     }
   }
 

@@ -1,22 +1,96 @@
-<button
-  class="rounded-full absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 shadow-gray-700"
-  (click)="scrollItems(-1)"
->
-  <
-</button>
-<div 
-  #scroller 
-  class="scroller" 
-  c3AttachScroll 
-  (c3OnDrag)="onDrag($event)" 
-  (c3OnDragEnd)="onDragEnd()" 
+@if (shouldShowButtons()) {
+  <button
+    class="carousel-btn carousel-btn-prev rounded-full absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 shadow-gray-700 transition-opacity"
+    (click)="scrollItems(-1)"
+    [disabled]="isAtStart()"
+    [class.opacity-50]="isAtStart()"
+    [class.cursor-not-allowed]="isAtStart()"
+    [attr.aria-label]="'Previous item'"
+    [attr.aria-disabled]="isAtStart()"
+    type="button"
+  >
+    <
+  </button>
+}
+<div
+  #scroller
+  class="scroller"
+  [class.snap-enabled]="enableSnap()"
+  [class.snap-start]="enableSnap() && snapAlign() === 'start'"
+  [class.snap-center]="enableSnap() && snapAlign() === 'center'"
+  [class.snap-end]="enableSnap() && snapAlign() === 'end'"
+  c3AttachScroll
+  (scroll)="onScroll()"
+  (c3OnDrag)="onDrag($event)"
+  (c3OnDragEnd)="onDragEnd()"
   (c3OnDragStart)="onDragStart()"
+  [attr.aria-label]="'Carousel items'"
 >
   <ng-content></ng-content>
 </div>
-<button
-  class="rounded-full absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 shadow-gray-700"
-  (click)="scrollItems(1)"
->
+@if (shouldShowButtons()) {
+  <button
+    class="carousel-btn carousel-btn-next rounded-full absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 shadow-gray-700 transition-opacity"
+    (click)="scrollItems(1)"
+    [disabled]="isAtEnd()"
+    [class.opacity-50]="isAtEnd()"
+    [class.cursor-not-allowed]="isAtEnd()"
+    [attr.aria-label]="'Next item'"
+    [attr.aria-disabled]="isAtEnd()"
+    type="button"
   >
-</button>
+    >
+  </button>
+}
+
+<!-- Position indicators (dots) -->
+@if (shouldShowDots()) {
+  <div class="carousel-dots" role="group" aria-label="Carousel navigation">
+    @for (item of carouselItems(); track $index) {
+      <button
+        class="carousel-dot"
+        [class.active]="currentIndex() === $index"
+        (click)="goToIndex($index)"
+        [attr.aria-label]="'Go to slide ' + ($index + 1) + ' of ' + totalItems()"
+        [attr.aria-current]="currentIndex() === $index ? 'true' : null"
+        type="button"
+      >
+        <span class="sr-only">Slide {{ $index + 1 }}</span>
+      </button>
+    }
+  </div>
+}
+
+<!-- Auto-play controls -->
+@if (autoPlay()) {
+  <div class="carousel-autoplay">
+    <button
+      class="carousel-autoplay-btn"
+      (click)="toggleAutoPlay()"
+      [attr.aria-label]="isPlaying() ? 'Pause auto-play' : 'Play auto-play'"
+      type="button"
+    >
+      @if (isPlaying()) {
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+      } @else {
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+        </svg>
+      }
+    </button>
+
+    <!-- Progress bar -->
+    @if (isPlaying()) {
+      <div class="carousel-progress-bar">
+        <div class="carousel-progress-fill" [style.width.%]="progress()"></div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Screen reader announcements -->
+<div class="sr-only" aria-live="polite" aria-atomic="true">
+  Item {{ currentIndex() + 1 }} of {{ totalItems() }}
+</div>

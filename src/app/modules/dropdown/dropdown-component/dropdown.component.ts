@@ -15,15 +15,16 @@ import {
   ViewContainerRef,
   ChangeDetectionStrategy,
   OnDestroy,
+  Injector,
 } from '@angular/core';
 import { ScrollDispatcherService } from '../../scrollDispatcher/scrollDispatcher.service';
 
 @Component({
-selector: 'c3-dropdown',
+  selector: 'c3-dropdown',
   standalone: false,
   templateUrl: './dropdown.component.html',
   styleUrl: './dropdown.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class C3DropdownComponent<T> implements OnDestroy {
   public readonly element = input<HTMLElement | undefined>();
@@ -39,12 +40,13 @@ export class C3DropdownComponent<T> implements OnDestroy {
   public readonly componentRef = signal<ComponentRef<T> | undefined>(undefined);
 
   public readonly componentRefInstance = computed(
-    () => this.componentRef()?.instance,
+    () => this.componentRef()?.instance
   );
 
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly scrollDispatcherService = inject(ScrollDispatcherService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly _injector = inject(Injector);
 
   private readonly viewContainerRef = viewChild('c3Dropdown', {
     read: ViewContainerRef,
@@ -65,11 +67,9 @@ export class C3DropdownComponent<T> implements OnDestroy {
           this.openDropdown();
         }
       },
-      {
-        allowSignalWrites: true,
-      },
+      { injector: this._injector }
     );
-    
+
     this.destroyRef.onDestroy(() => this.ngOnDestroy());
   }
 
@@ -79,19 +79,19 @@ export class C3DropdownComponent<T> implements OnDestroy {
 
     if (this.component()) {
       const componentRef = this.viewContainerRef().createComponent(
-        this.component(),
+        this.component()
       );
       this.componentRef.set(componentRef);
     } else if (this.templateRef()) {
       const viewRef = this.viewContainerRef().createEmbeddedView(
-        this.templateRef(),
+        this.templateRef()
       );
 
       this.componentRef.set(viewRef.rootNodes[0] as ComponentRef<T>);
     }
 
     this.#calculatePosition(this.position());
-    
+
     this.#subscribeToScroll();
 
     if (this.closeOnOutsideClick()) {
@@ -100,7 +100,8 @@ export class C3DropdownComponent<T> implements OnDestroy {
   }
 
   #setupClickOutsideListener(): void {
-    if (!this.element() || !this.componentRef() || this.clickOutsideListener) return;
+    if (!this.element() || !this.componentRef() || this.clickOutsideListener)
+      return;
 
     this.clickOutsideTimeout = window.setTimeout(() => {
       this.clickOutsideListener = this.#addClickOutsideListener();
@@ -108,7 +109,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
     }, 100);
   }
 
-  #addClickOutsideListener(): (() => void) {
+  #addClickOutsideListener(): () => void {
     const element = this.element();
     if (!element) return () => {};
 
@@ -120,7 +121,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
     };
 
     document.addEventListener('click', handleClick, { capture: true });
-    
+
     return () => {
       document.removeEventListener('click', handleClick, { capture: true });
     };
@@ -131,7 +132,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
       this.clickOutsideListener();
       this.clickOutsideListener = null;
     }
-    
+
     if (this.clickOutsideTimeout !== null) {
       clearTimeout(this.clickOutsideTimeout);
       this.clickOutsideTimeout = null;
@@ -141,15 +142,23 @@ export class C3DropdownComponent<T> implements OnDestroy {
   #subscribeToScroll(): void {
     if (!this.element()) return;
 
-    const scrollData = this.scrollDispatcherService.getScrollDataForElement(this.element());
-    
+    const scrollData = this.scrollDispatcherService.getScrollDataForElement(
+      this.element()
+    );
+
     if (scrollData) {
-      effect(() => {
-        const latestScrollElement = this.scrollDispatcherService.latestScrollElement();
-        if (latestScrollElement === scrollData.element) {
-          this.#calculatePosition(this.position());
+      effect(
+        () => {
+          const latestScrollElement =
+            this.scrollDispatcherService.latestScrollElement();
+          if (latestScrollElement === scrollData.element) {
+            this.#calculatePosition(this.position());
+          }
+        },
+        {
+          injector: this._injector,
         }
-      });
+      );
     }
   }
 
@@ -164,7 +173,8 @@ export class C3DropdownComponent<T> implements OnDestroy {
     this.left.set(rect.left);
     this.minWidth.set(rect.width);
 
-    const scrollData = this.scrollDispatcherService.getScrollDataForElement(element);
+    const scrollData =
+      this.scrollDispatcherService.getScrollDataForElement(element);
     const scrollContainerRect = scrollData?.element?.getBoundingClientRect();
 
     // // Check if the element is out of the scroll container
@@ -182,7 +192,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
 
   #isOutOfScroller(
     rect: DOMRect,
-    scrollContainerRect: DOMRect | undefined,
+    scrollContainerRect: DOMRect | undefined
   ): boolean {
     return (
       scrollContainerRect &&
@@ -196,7 +206,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
   #adjustPosition(
     rect: DOMRect,
     position: string,
-    viewportHeight: number,
+    viewportHeight: number
   ): void {
     const elementHeight = rect.height;
 
@@ -234,7 +244,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
   #positionBelow(
     rect: DOMRect,
     elementHeight: number,
-    viewportHeight: number,
+    viewportHeight: number
   ): void {
     this.top.update((oldvalue) => {
       if (!rect || !elementHeight || !viewportHeight) return oldvalue;
