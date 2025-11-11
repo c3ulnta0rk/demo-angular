@@ -1,15 +1,14 @@
-
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { C3OnClickOutsideDirective } from '../../modules/onClickOutside/onClickOutside.directive';
 
 @Component({
-    selector: 'c3-sample',
-    imports: [C3OnClickOutsideDirective],
-    templateUrl: './sample.component.html',
-    styleUrl: './sample.component.scss'
+  selector: 'c3-sample',
+  imports: [C3OnClickOutsideDirective],
+  templateUrl: './sample.component.html',
+  styleUrl: './sample.component.scss',
 })
 export class SampleComponent {
-  @Input() public txt: string = 'Sample Component';
+  public txt = model<string>('Sample Component');
 
   clickOutside($event: any) {
     // console.log('clickOutside', $event);

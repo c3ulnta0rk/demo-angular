@@ -54,8 +54,11 @@ export class DropdownExamplePageComponent {
       effect(
         () => {
           const ref = mountedDropdown.afterMounted();
+          console.log(ref);
           if (ref) {
-            ref.componentRefInstance().txt = `Coucou Dédé Dropdownifou c'est c3-${items}`;
+            ref
+              .componentRefInstance()
+              ?.txt.set(`Coucou Dédé Dropdownifou c'est c3-${items}`);
             if (!this.dropdowns().has(items)) this.dropdowns().set(items, ref);
 
             const closeSubscription = ref.close.subscribe(() => {

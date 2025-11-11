@@ -5,7 +5,7 @@ import {
   inject,
   signal,
   ChangeDetectionStrategy,
-  Input,
+  input,
 } from '@angular/core';
 
 @Component({
@@ -16,7 +16,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class C3OptionComponent {
-  @Input() optionId?: string;
+  public readonly optionId = input<string | undefined>(undefined);
   public readonly selected = signal(false);
   private readonly elementRef = inject(ElementRef);
   private static counter = 0;
@@ -43,7 +43,7 @@ export class C3OptionComponent {
 
     // Initialize accessibility attributes
     const element = this.elementRef.nativeElement;
-    const id = this.optionId || `c3-option-${C3OptionComponent.counter++}`;
+    const id = this.optionId() || `c3-option-${C3OptionComponent.counter++}`;
     element.setAttribute('id', id);
     element.setAttribute('role', 'option');
     element.setAttribute('aria-selected', 'false');

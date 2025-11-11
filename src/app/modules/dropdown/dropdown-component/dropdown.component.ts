@@ -59,6 +59,7 @@ export class C3DropdownComponent<T> implements OnDestroy {
 
   private clickOutsideListener: (() => void) | null = null;
   private clickOutsideTimeout: number | null = null;
+  private readonly scrollRegistered = signal<boolean>(false);
 
   constructor() {
     effect(
@@ -68,6 +69,26 @@ export class C3DropdownComponent<T> implements OnDestroy {
         }
       },
       { injector: this._injector }
+    );
+
+    // Setup scroll effect in constructor (outside reactive context)
+    effect(
+      () => {
+        if (this.scrollRegistered()) {
+          const latestScrollElement =
+            this.scrollDispatcherService.latestScrollElement();
+          const scrollData = this.element()
+            ? this.scrollDispatcherService.getScrollDataForElement(this.element())
+            : null;
+
+          if (latestScrollElement && scrollData && latestScrollElement === scrollData.element) {
+            this.#calculatePosition(this.position());
+          }
+        }
+      },
+      {
+        injector: this._injector,
+      }
     );
 
     this.destroyRef.onDestroy(() => this.ngOnDestroy());
@@ -92,7 +113,10 @@ export class C3DropdownComponent<T> implements OnDestroy {
 
     this.#calculatePosition(this.position());
 
-    this.#subscribeToScroll();
+    // Activate scroll tracking instead of creating new effect
+    if (this.element()) {
+      this.scrollRegistered.set(true);
+    }
 
     if (this.closeOnOutsideClick()) {
       this.#setupClickOutsideListener();
@@ -136,29 +160,6 @@ export class C3DropdownComponent<T> implements OnDestroy {
     if (this.clickOutsideTimeout !== null) {
       clearTimeout(this.clickOutsideTimeout);
       this.clickOutsideTimeout = null;
-    }
-  }
-
-  #subscribeToScroll(): void {
-    if (!this.element()) return;
-
-    const scrollData = this.scrollDispatcherService.getScrollDataForElement(
-      this.element()
-    );
-
-    if (scrollData) {
-      effect(
-        () => {
-          const latestScrollElement =
-            this.scrollDispatcherService.latestScrollElement();
-          if (latestScrollElement === scrollData.element) {
-            this.#calculatePosition(this.position());
-          }
-        },
-        {
-          injector: this._injector,
-        }
-      );
     }
   }
 
